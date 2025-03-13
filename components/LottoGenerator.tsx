@@ -129,7 +129,7 @@ const LottoGenerator = () => {
   };
 
   // ✅ 여기에 붙여넣기
-  const fetchMultiWinningNumbers = async (startRound, endRound) => {
+  const fetchMultiWinningNumbers = async (startRound: number, endRound: number): Promise<void> => {
     let newMap = {};
 
     for (let i = endRound; i >= startRound; i--) {
