@@ -112,16 +112,20 @@ const LottoGenerator = () => {
     }
   }, [infoGenerated, luckyNumbers]); // 🎯 `infoGenerated` 또는 `luckyNumbers` 변경 시 실행
 
-  const checkWinningRank = (userNumbers, winningNumbers, bonusNumber) => {
-    const matchCount = userNumbers.filter(num => winningNumbers.includes(num)).length;
+  const checkWinningRank = (
+    userNumbers: number[],
+    winningNumbers: number[],
+    bonusNumber: number
+  ): number => {
+    const matchCount = userNumbers.filter((num) => winningNumbers.includes(num)).length;
     const hasBonus = userNumbers.includes(bonusNumber);
   
-    if (matchCount === 6) return "1등";
-    if (matchCount === 5 && hasBonus) return "2등";
-    if (matchCount === 5) return "3등";
-    if (matchCount === 4) return "4등";
-    if (matchCount === 3) return "5등";
-    return "낙첨";
+    if (matchCount === 6) return 1;
+    if (matchCount === 5 && hasBonus) return 2;
+    if (matchCount === 5) return 3;
+    if (matchCount === 4) return 4;
+    if (matchCount === 3) return 5;
+    return 0; // 낙첨
   };
 
   // ✅ 여기에 붙여넣기
