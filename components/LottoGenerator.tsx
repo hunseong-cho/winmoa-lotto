@@ -150,11 +150,7 @@ const LottoGenerator = () => {
     setWinningMap(newMap);
   };
 
-  type LottoEntry = {
-    round: number;
-    numbers: number[];
-  };
-  
+  type LottoEntry = { round: number; numbers: number[] };
   type WinningMap = Record<number, { numbers: number[]; bonus: number }>;
   
   const calculateRoundBasedStats = (
