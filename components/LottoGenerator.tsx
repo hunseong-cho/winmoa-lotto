@@ -149,17 +149,24 @@ const LottoGenerator = () => {
   
     setWinningMap(newMap);
   };
-  
-  const calculateTotalWinningStats = (history, winningMap) => {
-    const stats = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
-  
-    history.forEach(entry => {
+
+  type LottoEntry = {
+    round: number;
+    numbers: number[];
+  };
+
+  type WinningMap = Record<number, { numbers: number[]; bonus: number }>;
+
+  const calculateTotalWinningStats = (history: LottoEntry[], winningMap: WinningMap) => {
+    const stats: Record<string, number> = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
+
+    history.forEach((entry) => {
       const winInfo = winningMap[entry.round];
       if (!winInfo) return;
       const rank = checkWinningRank(entry.numbers, winInfo.numbers, winInfo.bonus);
       if (rank in stats) stats[rank]++;
     });
-  
+
     return stats;
   };
   
