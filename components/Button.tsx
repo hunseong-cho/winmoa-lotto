@@ -1,13 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { ReactNode, MouseEventHandler } from "react";
 
-const Button = ({ onClick, children, className = "" }) => {
+interface ButtonProps {
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  children: ReactNode;
+  className?: string;
+}
+
+const Button = ({ onClick, children, className = "" }: ButtonProps) => {
   return (
-    <button
-      onClick={onClick}
-      className={`px-4 py-2 rounded shadow-md ${className}`}
-    >
+    <button onClick={onClick} className={className}>
       {children}
     </button>
   );
