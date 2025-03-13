@@ -128,15 +128,14 @@ const LottoGenerator = () => {
     return 0; // 낙첨
   };
 
-  // ✅ 여기에 붙여넣기
   const fetchMultiWinningNumbers = async (startRound: number, endRound: number): Promise<void> => {
-    let newMap = {};
-
+    let newMap: Record<number, { numbers: number[]; bonus: number }> = {}; // <-- 핵심 수정 포인트!
+  
     for (let i = endRound; i >= startRound; i--) {
       try {
         const res = await fetch(`/api/lotto?drwNo=${i}`);
         const data = await res.json();
-
+  
         if (data?.numbers && data?.bonus != null) {
           newMap[i] = {
             numbers: data.numbers,
@@ -147,10 +146,10 @@ const LottoGenerator = () => {
         console.warn(`❌ ${i}회차 실패`);
       }
     }
-
+  
     setWinningMap(newMap);
   };
-
+  
   const calculateTotalWinningStats = (history, winningMap) => {
     const stats = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
   
