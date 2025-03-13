@@ -17,9 +17,9 @@ const parseDate = (dateString: string | null): Date | null => {
   return isNaN(parsedDate.getTime()) ? null : parsedDate;
 };
 
-const getLottoRound = (entry) => {
-  if (!entry) return "회차 정보 없음"; // ✅ entry가 없는 경우 방어
-  return entry.round || calculateLottoRound(entry.date);
+const getLottoRound = (entry: { round?: number; date?: string }): string | number => {
+  if (!entry) return "회차 정보 없음";
+  return entry.round || calculateLottoRound(entry.date || "");
 };
 
 const calculateLottoRound = (dateString = null) => {
