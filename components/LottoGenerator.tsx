@@ -154,21 +154,33 @@ const LottoGenerator = () => {
     round: number;
     numbers: number[];
   };
-
+  
   type WinningMap = Record<number, { numbers: number[]; bonus: number }>;
-
-  const calculateTotalWinningStats = (history: LottoEntry[], winningMap: WinningMap) => {
-    const stats: Record<string, number> = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
-
-    history.forEach((entry) => {
-      const winInfo = winningMap[entry.round];
-      if (!winInfo) return;
-      const rank = checkWinningRank(entry.numbers, winInfo.numbers, winInfo.bonus);
-      if (rank in stats) stats[rank]++;
-    });
-
-    return stats;
-  };
+  
+  const calculateRoundBasedStats = (
+    history: LottoEntry[],
+    winningMap: WinningMap,
+    lastRound: number
+  ): { round: number; rankCounts: Record<string, number> }[] => {
+    const rounds = Array.from({ length: 5 }, (_, i) => lastRound - i);
+    const result = [];
+  
+    for (const round of rounds) {
+      const rankCounts: Record<string, number> = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
+      const winInfo = winningMap[round];
+      if (!winInfo) continue;
+  
+      const filteredHistory = history.filter((entry) => entry.round === round);
+      filteredHistory.forEach((entry) => {
+        const rank = checkWinningRank(entry.numbers, winInfo.numbers, winInfo.bonus);
+        if (rank in rankCounts) rankCounts[rank]++;
+      });
+  
+      result.push({ round, rankCounts });
+    }
+  
+    return result;
+  };  
   
   const calculateRoundBasedStats = (history, winningMap, lastRound) => {
     const rounds = Array.from({ length: 5 }, (_, i) => lastRound - i);
