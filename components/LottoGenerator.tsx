@@ -4,18 +4,17 @@ import React, { useState, useEffect, useMemo } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 
-const parseDate = (dateString) => {
+const parseDate = (dateString: string | null): Date | null => {
   if (!dateString) return null;
 
-  // ✅ 한국 날짜 포맷을 ISO 포맷으로 변환 시도
   let formattedDate = dateString
-    .replace(/\./g, "-") // 점(.)을 대시(-)로 변경
-    .replace("오전", "AM") // 오전 → AM
-    .replace("오후", "PM"); // 오후 → PM
+    .replace(/\./g, "-")
+    .replace("오전", "AM")
+    .replace("오후", "PM");
 
-  let parsedDate = new Date(formattedDate);
+  const parsedDate = new Date(formattedDate);
 
-  return isNaN(parsedDate.getTime()) ? null : parsedDate; // ✅ 유효한 날짜인지 확인 후 반환
+  return isNaN(parsedDate.getTime()) ? null : parsedDate;
 };
 
 const getLottoRound = (entry) => {
