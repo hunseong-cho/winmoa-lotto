@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 추가적인 글로벌 스타일 */
+body {
+  font-family: var(--font-geist-sans), sans-serif;
+}
