@@ -5,15 +5,14 @@ import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 import type { WinningNumbersData } from "@/types";
 
-interface WinningNumbersData {
+interface WinningNumbers {
   round: number;
   date: string;
   numbers: number[];
   bonus: number;
-  totalPrize?: number;
-  firstWinnerCount?: number;
-  firstWinAmount?: number;
 }
+
+const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbers[]>([]);
 
 const ballSizeClass = {
   default: "w-9 h-9 text-xs md:w-10 md:h-10 md:text-sm lg:w-12 lg:h-12 lg:text-base",
@@ -272,15 +271,12 @@ const LottoGenerator = () => {
       console.log("✅ 최신 당첨번호:", data);
   
       // ✅ 1등 당첨번호 상태 업데이트
-      setLatestWinningNumbers({
+      setLatestWinningNumbers([{
         round: data.round,
         date: data.date,
         numbers: data.numbers,
         bonus: data.bonus,
-        totalPrize: data.totalPrize,
-        firstWinnerCount: data.firstWinnerCount,
-        firstWinAmount: data.firstWinAmount,
-      } as WinningNumbersData);
+      }]);
 
       // 📌 회차별 당첨번호 저장
       setWinningMap(prev => ({
