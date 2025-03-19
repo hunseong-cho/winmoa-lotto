@@ -60,8 +60,7 @@ const calculateLottoRound = (dateString = null) => {
 };
 
 
-const LottoGenerator = () => {
-  const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersData | null>(null);
+const LottoGenerator = () => {  
   const [name, setName] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [birthYear, setBirthYear] = useState("");
