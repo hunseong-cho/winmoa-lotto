@@ -269,7 +269,7 @@ const LottoGenerator = () => {
         totalPrize: data.totalPrize,
         firstWinnerCount: data.firstWinnerCount,
         firstWinAmount: data.firstWinAmount,
-      });
+      } as any);
 
       // 📌 회차별 당첨번호 저장
       setWinningMap(prev => ({
