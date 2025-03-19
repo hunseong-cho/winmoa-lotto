@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
+import type { WinningNumbers } from "@/types";
+
+const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbers | null>(null);
 
 const ballSizeClass = {
   default: "w-9 h-9 text-xs md:w-10 md:h-10 md:text-sm lg:w-12 lg:h-12 lg:text-base",
@@ -74,7 +77,7 @@ const LottoGenerator = () => {
   const [winningMap, setWinningMap] = useState({}); // 회차별 1등번호+보너스 저장
   const [totalStats, setTotalStats] = useState({ "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 });
   const [roundStats, setRoundStats] = useState([]); // 최근 5회차별 당첨 통계
-  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+    const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const bannerImages = [
     {
       pcSrc: "/banner-ad.jpg",
