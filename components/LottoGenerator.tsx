@@ -4,6 +4,13 @@ import React, { useState, useEffect, useMemo } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 
+interface WinningNumbersData {
+  round: number; // 또는 string (data.round의 타입에 맞게)
+  date: string;
+  numbers: number[];
+  bonus: number;
+}
+
 const ballSizeClass = {
   default: "w-9 h-9 text-xs md:w-10 md:h-10 md:text-sm lg:w-12 lg:h-12 lg:text-base",
   small:   "w-7 h-7 text-[11px] md:w-9 md:h-9 md:text-xs lg:w-10 lg:h-10 lg:text-sm",
@@ -70,7 +77,7 @@ const LottoGenerator = () => {
   const [additionalNumbers, setAdditionalNumbers] = useState([]); // ✅ 추가 생성된 번호들 저장
   const [countdown, setCountdown] = useState(0); // ✅ 카운트다운 상태
   const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부
-  const [latestWinningNumbers, setLatestWinningNumbers] = useState([]);
+  const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersData | null>(null);
   const [winningMap, setWinningMap] = useState({}); // 회차별 1등번호+보너스 저장
   const [totalStats, setTotalStats] = useState({ "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 });
   const [roundStats, setRoundStats] = useState([]); // 최근 5회차별 당첨 통계
