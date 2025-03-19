@@ -931,39 +931,42 @@ const LottoGenerator = () => {
             ))}
           </div>     
 
-          <div className="mt-10 w-full max-w-full lg:max-w-[900px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
-            <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
-              🎯 {latestWinningNumbers.round}회차 1등 당첨번호
-            </div>
-
-            {latestWinningNumbers.numbers ? (
-              <div className="flex items-center justify-center gap-2 flex-wrap mb-3">
-                {latestWinningNumbers.numbers.map((num, index) => (
-                  <span
-                    key={index}
-                    className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full font-bold flex items-center justify-center`}
-                  >
-                    {num}
-                  </span>
-                ))}
-                <span className="text-base font-bold text-black px-1">+</span>
-                <span
-                  className={`${ballSizeClass[ballSizeMode]} ${getBallColor(latestWinningNumbers.bonus)} text-white rounded-full font-bold flex items-center justify-center`}
-                >
-                  {latestWinningNumbers.bonus}
-                </span>
+         {latestWinningNumbers && (
+            <div className="mt-10 w-full max-w-full lg:max-w-[900px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
+              <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
+                🎯 {latestWinningNumbers.round}회차 1등 당첨번호
               </div>
-            ) : (
-              <p className="text-sm text-gray-700 text-center">📢 당첨번호 불러오는 중...</p>
-            )}
+          
+              {latestWinningNumbers.numbers ? (
+                <div className="flex items-center justify-center gap-2 flex-wrap mb-3">
+                  {latestWinningNumbers.numbers.map((num, index) => (
+                    <span
+                      key={index}
+                      className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full font-bold flex items-center justify-center`}
+                    >
+                      {num}
+                    </span>
+                  ))}
+                  <span className="text-base font-bold text-black px-1">+</span>
+                  <span
+                    className={`${ballSizeClass[ballSizeMode]} ${getBallColor(latestWinningNumbers.bonus)} text-white rounded-full font-bold flex items-center justify-center`}
+                  >
+                    {latestWinningNumbers.bonus}
+                  </span>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-700 text-center">📢 당첨번호 불러오는 중...</p>
+              )}
+          
+              <div className="text-sm md:text-base text-black text-center">
+                💰 1등 당첨금: <span className="font-semibold">{latestWinningNumbers.firstWinAmount?.toLocaleString()}원</span>
+              </div>
+              <div className="mt-2 text-sm text-black text-center">
+                🏆 1등 당첨자 수: <span className="font-medium">{latestWinningNumbers.firstWinnerCount}명</span>
+              </div>
+            </div>
+          )}
 
-            <div className="text-sm md:text-base text-black text-center">
-              💰 1등 당첨금: <span className="font-semibold">{latestWinningNumbers.firstWinAmount?.toLocaleString()}원</span>
-            </div>
-            <div className="mt-2 text-sm text-black text-center">
-              🏆 1등 당첨자 수: <span className="font-medium">{latestWinningNumbers.firstWinnerCount}명</span>
-            </div>
-          </div>
 
           {/* 🚀 롤링 광고 배너 - PC용 */}
           <div className="w-full flex justify-center mt-10 px-4 hidden md:flex">
