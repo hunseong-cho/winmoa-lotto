@@ -61,6 +61,7 @@ const calculateLottoRound = (dateString = null) => {
 
 
 const LottoGenerator = () => {
+  const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersData | null>(null);
   const [name, setName] = useState("");
   const [birthdate, setBirthdate] = useState("");
   const [birthYear, setBirthYear] = useState("");
@@ -79,8 +80,7 @@ const LottoGenerator = () => {
   const [currentRound, setCurrentRound] = useState(0);
   const [additionalNumbers, setAdditionalNumbers] = useState([]); // ✅ 추가 생성된 번호들 저장
   const [countdown, setCountdown] = useState(0); // ✅ 카운트다운 상태
-  const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부
-  const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersData | null>(null);
+  const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부  
   const [winningMap, setWinningMap] = useState({}); // 회차별 1등번호+보너스 저장
   const [totalStats, setTotalStats] = useState({ "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 });
   const [roundStats, setRoundStats] = useState([]); // 최근 5회차별 당첨 통계
@@ -274,12 +274,12 @@ const LottoGenerator = () => {
       setLatestWinningNumbers({
         round: data.round,
         date: data.date,
-        numbers: data.numbers, // ✅ 당첨 번호 배열
-        bonus: data.bonus, // ✅ 보너스 번호
+        numbers: data.numbers,
+        bonus: data.bonus,
         totalPrize: data.totalPrize,
         firstWinnerCount: data.firstWinnerCount,
         firstWinAmount: data.firstWinAmount,
-      });
+      } as WinningNumbersData);
 
       // 📌 회차별 당첨번호 저장
       setWinningMap(prev => ({
