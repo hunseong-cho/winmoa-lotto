@@ -5,10 +5,13 @@ import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 
 interface WinningNumbersData {
-  round: number; // 또는 string (data.round의 타입에 맞게)
+  round: number;
   date: string;
   numbers: number[];
   bonus: number;
+  totalPrize?: number;
+  firstWinnerCount?: number;
+  firstWinAmount?: number;
 }
 
 const ballSizeClass = {
