@@ -1,12 +1,8 @@
 "use client";
 
-import type { WinningNumbers } from "@/types";
 import React, { useState, useEffect, useMemo } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
-
-
-const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbers | null>(null);
 
 const ballSizeClass = {
   default: "w-9 h-9 text-xs md:w-10 md:h-10 md:text-sm lg:w-12 lg:h-12 lg:text-base",
@@ -74,7 +70,7 @@ const LottoGenerator = () => {
   const [additionalNumbers, setAdditionalNumbers] = useState([]); // ✅ 추가 생성된 번호들 저장
   const [countdown, setCountdown] = useState(0); // ✅ 카운트다운 상태
   const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부
-  const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbers | null>(null);
+  const [latestWinningNumbers, setLatestWinningNumbers] = useState([]);
   const [winningMap, setWinningMap] = useState({}); // 회차별 1등번호+보너스 저장
   const [totalStats, setTotalStats] = useState({ "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 });
   const [roundStats, setRoundStats] = useState([]); // 최근 5회차별 당첨 통계
@@ -273,7 +269,7 @@ const LottoGenerator = () => {
         totalPrize: data.totalPrize,
         firstWinnerCount: data.firstWinnerCount,
         firstWinAmount: data.firstWinAmount,
-      });      
+      });
 
       // 📌 회차별 당첨번호 저장
       setWinningMap(prev => ({
