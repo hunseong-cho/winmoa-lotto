@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
+import type { WinningNumbersData } from "@/types";
 
 interface WinningNumbersData {
   round: number;
