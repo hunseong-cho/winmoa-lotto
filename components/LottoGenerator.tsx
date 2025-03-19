@@ -271,12 +271,17 @@ const LottoGenerator = () => {
       console.log("✅ 최신 당첨번호:", data);
   
       // ✅ 1등 당첨번호 상태 업데이트
-      setLatestWinningNumbers([{
+      const latestData: WinningNumbersData = {
         round: data.round,
         date: data.date,
         numbers: data.numbers,
         bonus: data.bonus,
-      }]);
+        totalPrize: data.totalPrize,
+        firstWinnerCount: data.firstWinnerCount,
+        firstWinAmount: data.firstWinAmount,
+      };
+      
+      setLatestWinningNumbers(latestData);
 
       // 📌 회차별 당첨번호 저장
       setWinningMap(prev => ({
