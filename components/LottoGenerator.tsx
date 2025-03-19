@@ -12,7 +12,7 @@ interface WinningNumbers {
   bonus: number;
 }
 
-const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbers[]>([]);
+const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersData | null>(null);
 
 const ballSizeClass = {
   default: "w-9 h-9 text-xs md:w-10 md:h-10 md:text-sm lg:w-12 lg:h-12 lg:text-base",
