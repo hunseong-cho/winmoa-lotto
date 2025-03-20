@@ -20,7 +20,7 @@ const getBallColor = (num: number): string => {
   return "bg-green-500";
 };
 
-const parseDate = (dateString) => {
+const parseDate = (dateString:any) => {
   if (!dateString) return null;
 
   // ✅ 한국 날짜 포맷을 ISO 포맷으로 변환 시도
