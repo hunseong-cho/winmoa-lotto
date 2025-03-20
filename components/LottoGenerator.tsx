@@ -224,12 +224,12 @@ const LottoGenerator = () => {
   ): { "1등": number; "2등": number; "3등": number; "4등": number; "5등": number } => {
     const stats = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
   
-    history.forEach(entry => {
+    history.forEach((entry) => {
       const winInfo = winningMap[entry.round];
       if (!winInfo) return;
   
       const rank = checkWinningRank(entry.numbers, winInfo.numbers, winInfo.bonus);
-      if (rank in stats) stats[rank]++;
+      if (rank in stats) stats[rank as keyof typeof stats]++;
     });
   
     return stats;
