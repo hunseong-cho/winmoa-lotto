@@ -456,7 +456,7 @@ const LottoGenerator = () => {
   
   }, [winningMap, latestWinningNumbers, generatedHistory]);
   
-  const getBallColor = (num) => {
+  const getBallColor = (num: number): string => {
     if (num <= 10) return "bg-yellow-400";
     if (num <= 20) return "bg-blue-500";
     if (num <= 30) return "bg-red-500";
