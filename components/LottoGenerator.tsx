@@ -490,7 +490,7 @@ const LottoGenerator = () => {
     while (uniqueNumbers.size < 3) {
       uniqueNumbers.add(Math.floor(Math.random() * 45) + 1);
     }
-    setLuckyNumbers([...uniqueNumbers]);
+    setLuckyNumbers([...uniqueNumbers] as number[]);
   
     const directions = ["북동", "북서", "남동", "남서", "동", "서", "남", "북"];
     setLuckyStoreDirection(directions[(star + saju) % directions.length]);
