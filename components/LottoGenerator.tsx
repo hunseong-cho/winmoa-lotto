@@ -262,13 +262,27 @@ const LottoGenerator = () => {
     history: { round: number; numbers: number[] }[],
     winningMap: Record<number, { numbers: number[]; bonus: number }>,
     lastRound: number
-  ): { round: number; [key: string]: number }[] => {
+  ): {
+    round: number;
+    "1등": number;
+    "2등": number;
+    "3등": number;
+    "4등": number;
+    "5등": number;
+  }[] => {
     const rounds = Array.from({ length: 5 }, (_, i) => lastRound - i);
-    const result: { round: number; [key: string]: number }[] = [];
+    const result: {
+      round: number;
+      "1등": number;
+      "2등": number;
+      "3등": number;
+      "4등": number;
+      "5등": number;
+    }[] = [];
   
     rounds.forEach((round) => {
       const entries = history.filter((e) => e.round === round);
-      const roundStats: { round: number; [key: string]: number } = {
+      const roundStats = {
         round,
         "1등": 0,
         "2등": 0,
@@ -285,7 +299,9 @@ const LottoGenerator = () => {
   
       entries.forEach((entry) => {
         const rank = checkWinningRank(entry.numbers, winInfo.numbers, winInfo.bonus);
-        if (rank in roundStats) roundStats[rank as keyof typeof roundStats]++;
+        if (rank in roundStats) {
+          roundStats[rank as keyof typeof roundStats]++;
+        }
       });
   
       result.push(roundStats);
@@ -293,6 +309,7 @@ const LottoGenerator = () => {
   
     return result;
   };
+
 
   const fetchWinningNumbers = async () => {
     try {
