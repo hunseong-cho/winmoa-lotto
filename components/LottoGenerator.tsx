@@ -12,7 +12,7 @@ const ballSizeClass = {
 
 const ballSizeMode = "default";
 
-const getBallColor = (num) => {
+const getBallColor = (num: number): string => {
   if (num <= 10) return "bg-yellow-500";
   if (num <= 20) return "bg-blue-500";
   if (num <= 30) return "bg-red-500";
