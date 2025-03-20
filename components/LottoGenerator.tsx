@@ -221,8 +221,8 @@ const LottoGenerator = () => {
   const calculateTotalWinningStats = (
     history: { numbers: number[]; round: number }[],
     winningMap: Record<number, { numbers: number[]; bonus: number }>
-  ): { [rank: string]: number } => {
-    const stats: { [rank: string]: number } = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
+  ): { "1등": number; "2등": number; "3등": number; "4등": number; "5등": number } => {
+    const stats = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
   
     history.forEach(entry => {
       const winInfo = winningMap[entry.round];
