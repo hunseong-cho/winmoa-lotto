@@ -39,13 +39,13 @@ const getLottoRound = (entry: { round?: number; date?: string }): number | strin
   return entry.round || calculateLottoRound(entry.date);
 };
 
-const calculateLottoRound = (dateString?: string): number | string => {
+const calculateLottoRound = (dateString: string | null = null): number => {
   const firstLottoDate = new Date("2002-12-07");
   const targetDate = dateString ? parseDate(dateString) : new Date(); // ✅ 현재 날짜 또는 특정 날짜 사용
 
-  if (!targetDate || isNaN(targetDate.getTime())) return "회차 정보 없음"; // ✅ 유효하지 않은 날짜 방어 코드 추가
+  if (!targetDate || isNaN(targetDate.getTime())) return 0; // ✅ 유효하지 않은 날짜 방어 코드 추가
 
-  const diffInDays = Math.floor(((targetDate as Date).getTime() - firstLottoDate.getTime()) / (1000 * 60 * 60 * 24));
+  const diffInDays = Math.floor((targetDate.getTime() - firstLottoDate.getTime()) / (1000 * 60 * 60 * 24));
   return Math.floor(diffInDays / 7) + 2; // ✅ 일관된 보정값 적용
 };
 
@@ -76,7 +76,7 @@ const LottoGenerator = () => {
   const [infoGenerated, setInfoGenerated] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [currentRound, setCurrentRound] = useState(0);
+  const [currentRound, setCurrentRound] = useState<number>(0);
   const [additionalNumbers, setAdditionalNumbers] = useState([]); // ✅ 추가 생성된 번호들 저장
   const [countdown, setCountdown] = useState(0); // ✅ 카운트다운 상태
   const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부
