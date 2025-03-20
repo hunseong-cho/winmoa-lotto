@@ -239,22 +239,28 @@ const LottoGenerator = () => {
     history: { round: number; numbers: number[] }[],
     winningMap: { [key: number]: { numbers: number[]; bonus: number } },
     lastRound: number
-  ): { round: number; [key: string]: number }[] => {
+  ): { [key: string]: number }[] => {
     const rounds = Array.from({ length: 5 }, (_, i) => lastRound - i);
-    const result: { round: number; [key: string]: number }[] = [];
+    const result: { [key: string]: number }[] = [];
   
-    rounds.forEach(round => {
-      const entries = history.filter(e => e.round === round);
-      const roundStats = { round, "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
+    rounds.forEach((round) => {
+      const entries = history.filter((e) => e.round === round);
+      const roundStats: { [key: string]: number } = {
+        "round": round,
+        "1등": 0,
+        "2등": 0,
+        "3등": 0,
+        "4등": 0,
+        "5등": 0,
+      };
   
-      // 💥 winningMap 없더라도 0개로 강제로 push
       const winInfo = winningMap[round];
       if (!winInfo) {
-        result.push(roundStats); // ✅ 빈 값도 출력하게 함
+        result.push(roundStats);
         return;
       }
   
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         const rank = checkWinningRank(entry.numbers, winInfo.numbers, winInfo.bonus);
         if (rank in roundStats) roundStats[rank]++;
       });
