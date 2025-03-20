@@ -1,6 +1,6 @@
 "use client"; // ⚠ 반드시 맨 위에 넣어야 함!
 
-import LottoGenerator from "@/components/LottoGenerator";
+import LottoGenerator from "../components/LottoGenerator";
 import "../styles/globals.css";
 
 export default function Home() {
