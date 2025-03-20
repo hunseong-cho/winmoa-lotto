@@ -61,27 +61,37 @@ type WinningNumbersType = {
 
 
 const LottoGenerator = () => {
-  const [name, setName] = useState("");
-  const [birthdate, setBirthdate] = useState("");
-  const [birthYear, setBirthYear] = useState("");
-  const [birthMonth, setBirthMonth] = useState("");
-  const [birthDay, setBirthDay] = useState("");
+  const [name, setName] = useState<string>("");
+  const [birthdate, setBirthdate] = useState<string>("");
+  const [birthYear, setBirthYear] = useState<string>("");
+  const [birthMonth, setBirthMonth] = useState<string>("");
+  const [birthDay, setBirthDay] = useState<string>("");
   const [luckyNumbers, setLuckyNumbers] = useState<number[]>([]);
   const [generatedNumbers, setGeneratedNumbers] = useState<number[]>([]);
-  const [luckyStoreDirection, setLuckyStoreDirection] = useState("");
-  const [generatedHistory, setGeneratedHistory] = useState([]);
-  const [fortuneScore, setFortuneScore] = useState(null);
-  const [fortuneDetails, setFortuneDetails] = useState({ star: 0, saju: 0 });
-  const [inputDisabled, setInputDisabled] = useState(false);
-  const [infoGenerated, setInfoGenerated] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [luckyStoreDirection, setLuckyStoreDirection] = useState<string>("");
+  const [generatedHistory, setGeneratedHistory] = useState<
+    { round: number; date: string; numbers: number[]; user: string; id: string }[]
+  >([]);
+  const [fortuneScore, setFortuneScore] = useState<number | null>(null);
+  const [fortuneDetails, setFortuneDetails] = useState<{ star: number; saju: number }>({ star: 0, saju: 0 });
+  const [inputDisabled, setInputDisabled] = useState<boolean>(false);
+  const [infoGenerated, setInfoGenerated] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [currentRound, setCurrentRound] = useState<number>(0);
   const [additionalNumbers, setAdditionalNumbers] = useState<number[]>([]);
-  const [countdown, setCountdown] = useState(0); // ✅ 카운트다운 상태
-  const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부
-  const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersType | null>(null);
-  const [winningMap, setWinningMap] = useState<{ [key: number]: { numbers: number[]; bonus: number } }>({});
+  const [countdown, setCountdown] = useState<number>(0);
+  const [isCounting, setIsCounting] = useState<boolean>(false);
+  const [latestWinningNumbers, setLatestWinningNumbers] = useState<{
+    round: number;
+    date: string;
+    numbers: number[];
+    bonus: number;
+    totalPrize?: string;
+    firstWinnerCount?: number;
+    firstWinAmount?: number;
+  } | null>(null);
+  const [winningMap, setWinningMap] = useState<Record<number, { numbers: number[]; bonus: number }>>({});
   const [totalStats, setTotalStats] = useState<{
     "1등": number;
     "2등": number;
@@ -95,28 +105,29 @@ const LottoGenerator = () => {
     "4등": 0,
     "5등": 0,
   });
-  const [roundStats, setRoundStats] = useState<{ round: number; [key: string]: number }[]>([]);
-  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const [roundStats, setRoundStats] = useState<
+    { round: number; "1등": number; "2등": number; "3등": number; "4등": number; "5등": number }[]
+  >([]);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState<number>(0);
+  const [roundStatsPage, setRoundStatsPage] = useState<number>(1);
+  const [generationCounter, setGenerationCounter] = useState<number>(1);
+  const [generationId, setGenerationId] = useState<string>("");
+  const [generationTime, setGenerationTime] = useState<string>("");
+  const [itemsPerPage, setItemsPerPage] = useState<number>(16);
   const bannerImages = [
-    {
-      pcSrc: "/banner-ad.jpg",
-      mobileSrc: "/banner-ad-mobile-1.jpg",
-      link: "https://www.mobing.co.kr/",
-    },
-    {
-      pcSrc: "/banner-ad-2.jpg",
-      mobileSrc: "/banner-ad-mobile-2.jpg",
-      link: "https://www.mobing.co.kr/",
-    },
-    // 추가 배너들...
-  ];
+      {
+        pcSrc: "/banner-ad.jpg",
+        mobileSrc: "/banner-ad-mobile-1.jpg",
+        link: "https://www.mobing.co.kr/",
+      },
+      {
+        pcSrc: "/banner-ad-2.jpg",
+        mobileSrc: "/banner-ad-mobile-2.jpg",
+        link: "https://www.mobing.co.kr/",
+      },
+      // 추가 배너들...
+    ];
   const bannerDelay = 3000; // 슬라이드 전환 시간(ms)
-  const [roundStatsPage, setRoundStatsPage] = useState(1);
-  const [generationCounter, setGenerationCounter] = useState(1);
-  const [generationId, setGenerationId] = useState("");
-  const [generationTime, setGenerationTime] = useState("");
-  const roundsPerPage = 3;
-  const [itemsPerPage, setItemsPerPage] = useState(16);  
 
   useEffect(() => {
     const handleResize = () => {
