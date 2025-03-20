@@ -605,6 +605,8 @@ const LottoGenerator = () => {
       .map(([num, count]) => ({ number: Number(num), count }));
   };
 
+  const roundsPerPage: number = 3;
+
   const totalRoundPages = Math.ceil(roundStats.length / roundsPerPage);
   const currentRoundStats = roundStats.slice(
     (roundStatsPage - 1) * roundsPerPage,
