@@ -235,7 +235,11 @@ const LottoGenerator = () => {
     return stats;
   };
   
-  const calculateRoundBasedStats = (history, winningMap, lastRound) => {
+  const calculateRoundBasedStats = (
+    history: { round: number; numbers: number[] }[],
+    winningMap: { [key: number]: { numbers: number[]; bonus: number } },
+    lastRound: number
+  ): { round: number; [key: string]: number }[] => {
     const rounds = Array.from({ length: 5 }, (_, i) => lastRound - i);
     const result = [];
   
