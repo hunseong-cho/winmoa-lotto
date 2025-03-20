@@ -49,6 +49,16 @@ const calculateLottoRound = (dateString?: string): number | string => {
   return Math.floor(diffInDays / 7) + 2; // ✅ 일관된 보정값 적용
 };
 
+type WinningNumbersType = {
+  round: number;
+  date?: string;
+  numbers: number[];
+  bonus: number;
+  totalPrize?: number;
+  firstWinnerCount?: number;
+  firstWinAmount?: number;
+};
+
 
 const LottoGenerator = () => {
   const [name, setName] = useState("");
@@ -70,7 +80,7 @@ const LottoGenerator = () => {
   const [additionalNumbers, setAdditionalNumbers] = useState([]); // ✅ 추가 생성된 번호들 저장
   const [countdown, setCountdown] = useState(0); // ✅ 카운트다운 상태
   const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부
-  const [latestWinningNumbers, setLatestWinningNumbers] = useState([]);
+  const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersType | null>(null);
   const [winningMap, setWinningMap] = useState({}); // 회차별 1등번호+보너스 저장
   const [totalStats, setTotalStats] = useState({ "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 });
   const [roundStats, setRoundStats] = useState([]); // 최근 5회차별 당첨 통계
@@ -932,12 +942,12 @@ const LottoGenerator = () => {
             ))}
           </div>     
 
-          <div className="mt-10 w-full max-w-full lg:max-w-[900px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
-            <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
-              🎯 {latestWinningNumbers.round}회차 1등 당첨번호
-            </div>
+          {latestWinningNumbers && latestWinningNumbers.numbers && (
+            <div className="mt-10 w-full max-w-full lg:max-w-[900px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
+              <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
+                🎯 {latestWinningNumbers.round}회차 1등 당첨번호
+              </div>
 
-            {latestWinningNumbers.numbers ? (
               <div className="flex items-center justify-center gap-2 flex-wrap mb-3">
                 {latestWinningNumbers.numbers.map((num, index) => (
                   <span
@@ -954,17 +964,15 @@ const LottoGenerator = () => {
                   {latestWinningNumbers.bonus}
                 </span>
               </div>
-            ) : (
-              <p className="text-sm text-gray-700 text-center">📢 당첨번호 불러오는 중...</p>
-            )}
 
-            <div className="text-sm md:text-base text-black text-center">
-              💰 1등 당첨금: <span className="font-semibold">{latestWinningNumbers.firstWinAmount?.toLocaleString()}원</span>
+              <div className="text-sm md:text-base text-black text-center">
+                💰 1등 당첨금: <span className="font-semibold">{latestWinningNumbers.firstWinAmount?.toLocaleString()}원</span>
+              </div>
+              <div className="mt-2 text-sm text-black text-center">
+                🏆 1등 당첨자 수: <span className="font-medium">{latestWinningNumbers.firstWinnerCount}명</span>
+              </div>
             </div>
-            <div className="mt-2 text-sm text-black text-center">
-              🏆 1등 당첨자 수: <span className="font-medium">{latestWinningNumbers.firstWinnerCount}명</span>
-            </div>
-          </div>
+          )}
 
           {/* 🚀 롤링 광고 배너 - PC용 */}
           <div className="w-full flex justify-center mt-10 px-4 hidden md:flex">
