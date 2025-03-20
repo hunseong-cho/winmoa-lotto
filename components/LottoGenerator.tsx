@@ -81,7 +81,7 @@ const LottoGenerator = () => {
   const [countdown, setCountdown] = useState(0); // ✅ 카운트다운 상태
   const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부
   const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersType | null>(null);
-  const [winningMap, setWinningMap] = useState({}); // 회차별 1등번호+보너스 저장
+  const [winningMap, setWinningMap] = useState<{ [key: number]: { numbers: number[]; bonus: number } }>({});
   const [totalStats, setTotalStats] = useState({ "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 });
   const [roundStats, setRoundStats] = useState([]); // 최근 5회차별 당첨 통계
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
@@ -197,7 +197,7 @@ const LottoGenerator = () => {
 
   // ✅ 여기에 붙여넣기
   const fetchMultiWinningNumbers = async (startRound: number, endRound: number): Promise<void> => {
-    let newMap = {};
+    let newMap: { [key: number]: { numbers: number[]; bonus: number } } = {};
 
     for (let i = endRound; i >= startRound; i--) {
       try {
