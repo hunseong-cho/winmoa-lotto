@@ -555,7 +555,8 @@ const LottoGenerator = () => {
     localStorage.setItem("lotto_generation_counter", String(nextCounter));
   }; 
 
-  const getLottoRound = (entry) => entry.round || calculateLottoRound(entry.date);
+  const getLottoRound = (entry: { round?: number; date?: string }) =>
+  entry.round || calculateLottoRound(entry.date);
 
   const handleButtonClick = (): void => {
     setButtonDisabled(true);
