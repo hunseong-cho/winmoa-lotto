@@ -82,8 +82,20 @@ const LottoGenerator = () => {
   const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부
   const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersType | null>(null);
   const [winningMap, setWinningMap] = useState<{ [key: number]: { numbers: number[]; bonus: number } }>({});
-  const [totalStats, setTotalStats] = useState({ "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 });
-  const [roundStats, setRoundStats] = useState([]); // 최근 5회차별 당첨 통계
+  const [totalStats, setTotalStats] = useState<{
+    "1등": number;
+    "2등": number;
+    "3등": number;
+    "4등": number;
+    "5등": number;
+  }>({
+    "1등": 0,
+    "2등": 0,
+    "3등": 0,
+    "4등": 0,
+    "5등": 0,
+  });
+  const [roundStats, setRoundStats] = useState<{ round: number; [key: string]: number }[]>([]);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const bannerImages = [
     {
@@ -237,16 +249,16 @@ const LottoGenerator = () => {
   
   const calculateRoundBasedStats = (
     history: { round: number; numbers: number[] }[],
-    winningMap: { [key: number]: { numbers: number[]; bonus: number } },
+    winningMap: Record<number, { numbers: number[]; bonus: number }>,
     lastRound: number
-  ): { [key: string]: number }[] => {
+  ): { round: number; [key: string]: number }[] => {
     const rounds = Array.from({ length: 5 }, (_, i) => lastRound - i);
-    const result: { [key: string]: number }[] = [];
+    const result: { round: number; [key: string]: number }[] = [];
   
     rounds.forEach((round) => {
       const entries = history.filter((e) => e.round === round);
-      const roundStats: { [key: string]: number } = {
-        "round": round,
+      const roundStats: { round: number; [key: string]: number } = {
+        round,
         "1등": 0,
         "2등": 0,
         "3등": 0,
@@ -262,14 +274,14 @@ const LottoGenerator = () => {
   
       entries.forEach((entry) => {
         const rank = checkWinningRank(entry.numbers, winInfo.numbers, winInfo.bonus);
-        if (rank in roundStats) roundStats[rank]++;
+        if (rank in roundStats) roundStats[rank as keyof typeof roundStats]++;
       });
   
       result.push(roundStats);
     });
   
     return result;
-  };  
+  };
 
   const fetchWinningNumbers = async () => {
     try {
