@@ -241,7 +241,7 @@ const LottoGenerator = () => {
     lastRound: number
   ): { round: number; [key: string]: number }[] => {
     const rounds = Array.from({ length: 5 }, (_, i) => lastRound - i);
-    const result = [];
+    const result: { round: number; [key: string]: number }[] = [];
   
     rounds.forEach(round => {
       const entries = history.filter(e => e.round === round);
