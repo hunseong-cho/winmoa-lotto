@@ -1,17 +1,17 @@
 "use client";
 
-import React, { ReactNode, MouseEventHandler } from "react";
+import React from "react";
 
 interface ButtonProps {
   children: React.ReactNode;
   onClick: () => void;
   className?: string;
-  disabled?: boolean; // ✅ 추가!
+  disabled?: boolean; // ✅ 타입 정의 OK
 }
 
-const Button = ({ onClick, children, className = "" }: ButtonProps) => {
+const Button = ({ onClick, children, className = "", disabled = false }: ButtonProps) => {
   return (
-    <button onClick={onClick} className={className}>
+    <button onClick={onClick} className={className} disabled={disabled}>
       {children}
     </button>
   );
