@@ -3,9 +3,10 @@
 import React, { ReactNode, MouseEventHandler } from "react";
 
 interface ButtonProps {
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  children: ReactNode;
+  children: React.ReactNode;
+  onClick: () => void;
   className?: string;
+  disabled?: boolean; // ✅ 추가!
 }
 
 const Button = ({ onClick, children, className = "" }: ButtonProps) => {
