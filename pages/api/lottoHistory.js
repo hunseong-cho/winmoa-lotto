@@ -21,16 +21,9 @@ const saveHistory = (history) => {
 export default function handler(req, res) {
   if (req.method === "GET") {
     const history = loadHistory();
-    res.status(200).json(history);
-  } else if (req.method === "POST") {
-    const newEntry = req.body;
-    const history = loadHistory();
-    
-    history.unshift(newEntry); // 최신 기록이 맨 위로 오게 저장
-    saveHistory(history);
-
-    res.status(200).json(history);
+    return res.status(200).json(history);
   } else {
-    res.status(405).json({ message: "Method Not Allowed" });
+    // ⚠ POST 제거 또는 아래처럼 주석처리
+    return res.status(403).json({ error: "Vercel 배포용 - ReadOnly mode" });
   }
 }

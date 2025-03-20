@@ -4,13 +4,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 
-interface WinningNumbersData {
-  round: number; // 또는 string (data.round의 타입에 맞게)
-  date: string;
-  numbers: number[];
-  bonus: number;
-}
-
 const ballSizeClass = {
   default: "w-9 h-9 text-xs md:w-10 md:h-10 md:text-sm lg:w-12 lg:h-12 lg:text-base",
   small:   "w-7 h-7 text-[11px] md:w-9 md:h-9 md:text-xs lg:w-10 lg:h-10 lg:text-sm",
@@ -276,7 +269,7 @@ const LottoGenerator = () => {
         totalPrize: data.totalPrize,
         firstWinnerCount: data.firstWinnerCount,
         firstWinAmount: data.firstWinAmount,
-      } as any);
+      });
 
       // 📌 회차별 당첨번호 저장
       setWinningMap(prev => ({
