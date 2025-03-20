@@ -67,7 +67,7 @@ const LottoGenerator = () => {
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
   const [luckyNumbers, setLuckyNumbers] = useState<number[]>([]);
-  const [generatedNumbers, setGeneratedNumbers] = useState([]);
+  const [generatedNumbers, setGeneratedNumbers] = useState<number[]>([]);
   const [luckyStoreDirection, setLuckyStoreDirection] = useState("");
   const [generatedHistory, setGeneratedHistory] = useState([]);
   const [fortuneScore, setFortuneScore] = useState(null);
@@ -77,7 +77,7 @@ const LottoGenerator = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [currentRound, setCurrentRound] = useState<number>(0);
-  const [additionalNumbers, setAdditionalNumbers] = useState([]); // ✅ 추가 생성된 번호들 저장
+  const [additionalNumbers, setAdditionalNumbers] = useState<number[]>([]);
   const [countdown, setCountdown] = useState(0); // ✅ 카운트다운 상태
   const [isCounting, setIsCounting] = useState(false); // ✅ 카운트다운 진행 여부
   const [latestWinningNumbers, setLatestWinningNumbers] = useState<WinningNumbersType | null>(null);
