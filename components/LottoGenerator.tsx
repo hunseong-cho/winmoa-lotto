@@ -66,7 +66,7 @@ const LottoGenerator = () => {
   const [birthYear, setBirthYear] = useState("");
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
-  const [luckyNumbers, setLuckyNumbers] = useState([]);
+  const [luckyNumbers, setLuckyNumbers] = useState<number[]>([]);
   const [generatedNumbers, setGeneratedNumbers] = useState([]);
   const [luckyStoreDirection, setLuckyStoreDirection] = useState("");
   const [generatedHistory, setGeneratedHistory] = useState([]);
@@ -359,7 +359,7 @@ const LottoGenerator = () => {
   
     setTimeout(() => {
       // 번호 생성
-      let numbers = new Set([...luckyNumbers]);
+      const numbers = new Set<number>([...luckyNumbers]);
       while (numbers.size < 6) {
         numbers.add(Math.floor(Math.random() * 45) + 1);
       }
