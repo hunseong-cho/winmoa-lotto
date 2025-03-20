@@ -45,7 +45,7 @@ const calculateLottoRound = (dateString?: string): number | string => {
 
   if (!targetDate || isNaN(targetDate.getTime())) return "회차 정보 없음"; // ✅ 유효하지 않은 날짜 방어 코드 추가
 
-  const diffInDays = Math.floor((targetDate - firstLottoDate) / (1000 * 60 * 60 * 24));
+  const diffInDays = Math.floor(((targetDate as Date).getTime() - firstLottoDate.getTime()) / (1000 * 60 * 60 * 24));
   return Math.floor(diffInDays / 7) + 2; // ✅ 일관된 보정값 적용
 };
 
