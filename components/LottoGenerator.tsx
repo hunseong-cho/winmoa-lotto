@@ -20,7 +20,7 @@ const getBallColor = (num: number): string => {
   return "bg-green-500";
 };
 
-const parseDate = (dateString:any) => {
+const parseDate = (dateString: string): Date | null => {
   if (!dateString) return null;
 
   // ✅ 한국 날짜 포맷을 ISO 포맷으로 변환 시도
@@ -34,12 +34,12 @@ const parseDate = (dateString:any) => {
   return isNaN(parsedDate.getTime()) ? null : parsedDate; // ✅ 유효한 날짜인지 확인 후 반환
 };
 
-const getLottoRound = (entry) => {
+const getLottoRound = (entry: { round?: number; date?: string }): number | string => {
   if (!entry) return "회차 정보 없음"; // ✅ entry가 없는 경우 방어
   return entry.round || calculateLottoRound(entry.date);
 };
 
-const calculateLottoRound = (dateString = null) => {
+const calculateLottoRound = (dateString?: string): number | string => {
   const firstLottoDate = new Date("2002-12-07");
   const targetDate = dateString ? parseDate(dateString) : new Date(); // ✅ 현재 날짜 또는 특정 날짜 사용
 
@@ -169,7 +169,11 @@ const LottoGenerator = () => {
     }
   }, [infoGenerated, luckyNumbers]); // 🎯 `infoGenerated` 또는 `luckyNumbers` 변경 시 실행
 
-  const checkWinningRank = (userNumbers, winningNumbers, bonusNumber) => {
+  const checkWinningRank = (
+    userNumbers: number[],
+    winningNumbers: number[],
+    bonusNumber: number
+  ): string => {
     const matchCount = userNumbers.filter(num => winningNumbers.includes(num)).length;
     const hasBonus = userNumbers.includes(bonusNumber);
   
@@ -182,7 +186,7 @@ const LottoGenerator = () => {
   };
 
   // ✅ 여기에 붙여넣기
-  const fetchMultiWinningNumbers = async (startRound, endRound) => {
+  const fetchMultiWinningNumbers = async (startRound: number, endRound: number): Promise<void> => {
     let newMap = {};
 
     for (let i = endRound; i >= startRound; i--) {
@@ -204,12 +208,16 @@ const LottoGenerator = () => {
     setWinningMap(newMap);
   };
 
-  const calculateTotalWinningStats = (history, winningMap) => {
-    const stats = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
+  const calculateTotalWinningStats = (
+    history: { numbers: number[]; round: number }[],
+    winningMap: Record<number, { numbers: number[]; bonus: number }>
+  ): { [rank: string]: number } => {
+    const stats: { [rank: string]: number } = { "1등": 0, "2등": 0, "3등": 0, "4등": 0, "5등": 0 };
   
     history.forEach(entry => {
       const winInfo = winningMap[entry.round];
       if (!winInfo) return;
+  
       const rank = checkWinningRank(entry.numbers, winInfo.numbers, winInfo.bonus);
       if (rank in stats) stats[rank]++;
     });
@@ -301,7 +309,7 @@ const LottoGenerator = () => {
     setRoundStats(perRound);
   }, [latestWinningNumbers, winningMap, generatedHistory]);  
 
-  const generateAdditionalNumbers = () => {
+  const generateAdditionalNumbers = (): void => {
     if (isCounting) return;
     setIsCounting(true);
     setCountdown(5);
@@ -396,7 +404,7 @@ const LottoGenerator = () => {
     return "bg-green-500";
   };
   
-  const generateFortuneAndNumbers = () => {
+  const generateFortuneAndNumbers = (): void => {
     if (!name || !birthdate) return;
 
     const today = new Date().toISOString().split("T")[0]; // ✅ 현재 날짜 (YYYY-MM-DD)
@@ -435,7 +443,7 @@ const LottoGenerator = () => {
     setInputDisabled(true);
   };
   
-  const generateLottoNumbers = () => {
+  const generateLottoNumbers = (): void => {
     let numbers = new Set([...luckyNumbers]);
     while (numbers.size < 6) {
       numbers.add(Math.floor(Math.random() * 45) + 1);
@@ -489,7 +497,7 @@ const LottoGenerator = () => {
 
   const getLottoRound = (entry) => entry.round || calculateLottoRound(entry.date);
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (): void => {
     setButtonDisabled(true);
     setTimeout(() => setButtonDisabled(false), 5000);
 
@@ -514,27 +522,27 @@ const LottoGenerator = () => {
     }
   };
 
-  const getMostFrequentNumbers = (history) => {
+  const getMostFrequentNumbers = (
+    history: { round: number; numbers: number[] }[]
+  ): { number: number; count: number }[] => {
     if (!history || history.length === 0) return [];
-
-      // 🎯 가장 최근 회차 찾기
-      const latestRound = Math.max(...history.map(entry => entry.round || 0));
-
-      // 🎯 가장 최근 회차의 번호만 집계
-      let numberCounts = {};
-      history
-        .filter(entry => entry.round === latestRound) // ✅ 최신 회차만 필터링
-        .forEach(entry => {
-          entry.numbers.forEach(num => {
-            numberCounts[num] = (numberCounts[num] || 0) + 1;
-          });
+  
+    const latestRound = Math.max(...history.map(entry => entry.round || 0));
+    const numberCounts: Record<number, number> = {};
+  
+    history
+      .filter(entry => entry.round === latestRound)
+      .forEach(entry => {
+        entry.numbers.forEach(num => {
+          numberCounts[num] = (numberCounts[num] || 0) + 1;
         });
-
-      return Object.entries(numberCounts)
-        .sort((a, b) => b[1] - a[1]) // ✅ 출현 빈도 높은 순 정렬
-        .slice(0, 6) // ✅ 상위 6개 선택
-        .map(([num, count]) => ({ number: Number(num), count }));
-    };
+      });
+  
+    return Object.entries(numberCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([num, count]) => ({ number: Number(num), count }));
+  };
 
   const totalRoundPages = Math.ceil(roundStats.length / roundsPerPage);
   const currentRoundStats = roundStats.slice(
@@ -560,7 +568,7 @@ const LottoGenerator = () => {
   }, [generatedHistory, currentPage, itemsPerPage]);
   
 
-  const maskUserName = (name) => {
+  const maskUserName = (name: string): string => {
     if (!name || typeof name !== "string") return "익명"; // ✅ 방어 코드 추가
     const length = name.length;  
     if (length === 1) return name + "*"; // ✅ 1글자일 경우 처리
@@ -591,11 +599,11 @@ const LottoGenerator = () => {
               disabled={inputDisabled}
             />
 
-            <div className="flex flex-col md:flex-row md:items-center gap-4 w-full justify-center">
+            <div className="flex flex-col md:flex-row md:items-center items-center gap-4 w-full justify-center">
               <input
                 type="number"
                 placeholder="출생 연도 (YYYY)"
-                className="p-3 border rounded text-center w-full max-w-[160px]"
+                className="p-3 border rounded text-center w-full sm:max-w-xs md:max-w-[160px]"
                 value={birthYear}
                 onChange={(e) => {
                   const inputValue = e.target.value.replace(/\D/g, "").slice(0, 4);
@@ -606,7 +614,7 @@ const LottoGenerator = () => {
               />
 
               <select
-                className="p-3 border rounded text-center w-full max-w-[120px]"
+                className="p-3 border rounded text-center w-full sm:max-w-xs md:max-w-[120px]"
                 value={birthMonth}
                 onChange={(e) => setBirthMonth(e.target.value)}
                 disabled={inputDisabled}
@@ -620,7 +628,7 @@ const LottoGenerator = () => {
               </select>
 
               <select
-                className="p-3 border rounded text-center w-full max-w-[120px]"
+                className="p-3 border rounded text-center w-full sm:max-w-xs md:max-w-[120px]"
                 value={birthDay}
                 onChange={(e) => setBirthDay(e.target.value)}
                 disabled={inputDisabled}
