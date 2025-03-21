@@ -374,11 +374,12 @@ const LottoGenerator = () => {
     setRoundStats(perRound);
   }, [latestWinningNumbers, winningMap, generatedHistory]);  
 
-  const generateAdditionalNumbers = (): void => {
+  // 변경된 코드 예시
+  const generateAdditionalNumbers = async (): Promise<void> => {
     if (isCounting) return;
     setIsCounting(true);
     setCountdown(5);
-  
+
     let timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -389,15 +390,13 @@ const LottoGenerator = () => {
         return prev - 1;
       });
     }, 1000);
-  
-    setTimeout(() => {
-      // 번호 생성
+
+    setTimeout(async () => {
       const numbers = new Set<number>([...luckyNumbers]);
       while (numbers.size < 6) {
         numbers.add(Math.floor(Math.random() * 45) + 1);
       }
       let finalNumbers = [...numbers].sort((a, b) => a - b);
-      setAdditionalNumbers(finalNumbers); 
 
       const now = new Date().toLocaleString("ko-KR", {
         year: "numeric",
@@ -407,30 +406,35 @@ const LottoGenerator = () => {
         minute: "2-digit",
         second: "2-digit",
         hour12: false,
-      }).replace(/\./g, ".").replace(" ", " ").replace(/\. /g, ".");
-  
-      // ✅ 히스토리에 넣을 항목 통일
+      }).replace(/\./g, ".").replace(/\. /g, ".");
+
       const newHistory = {
         round: currentRound,
         date: now,
         numbers: finalNumbers,
         user: maskUserName(name) || "익명",
-        id: newId,
       };
-  
-      // ✅ UI 및 리스트 갱신
-      setGeneratedHistory((prev) => [newHistory, ...prev]); // 실시간 반영
-      setGenerationCounter((prev) => prev + 1); // 카운터 증가      
-      setGenerationTime(now);  
- 
-      // ✅ 서버 저장 (선택)
+
+      // ✅ Firestore 저장해서 ID 받아오기
+      const newId = await saveLottoData(newHistory);
+      if (!newId) return;
+
+      const fullHistory = { ...newHistory, id: newId };
+
+      setAdditionalNumbers(finalNumbers);
+      setGeneratedHistory((prev) => [fullHistory, ...prev]);
+      setGenerationTime(now);
+      setGenerationId(newId); // 추가된 ID 반영
+
+      // ✅ 서버 백업 저장
       fetch("/api/lottoHistory", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newHistory),
+        body: JSON.stringify(fullHistory),
       }).catch((err) => console.error("추가 기록 저장 실패:", err));
     }, 5000);
   };
+
   
   
   
