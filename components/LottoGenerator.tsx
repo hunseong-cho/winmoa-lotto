@@ -3,6 +3,16 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
+import { saveLottoData } from "@/firebase/saveLottoData";
+
+const handleSave = () => {
+  saveLottoData({
+    round: 1100,
+    numbers: [3, 11, 20, 28, 34, 42],
+    date: "2025-03-21",
+    user: "테스트 사용자"
+  });
+};
 
 const ballSizeClass = {
   default: "w-9 h-9 text-xs md:w-10 md:h-10 md:text-sm lg:w-12 lg:h-12 lg:text-base",
@@ -539,6 +549,9 @@ const LottoGenerator = () => {
     // ✅ 히스토리 저장
     const updatedHistory = [...generatedHistory, newHistory];
     setGeneratedHistory(updatedHistory);
+
+    // ✅ Firestore 저장
+    saveLottoData(newHistory);
 
     // ✅ 서버 저장
     fetch("/api/lottoHistory", {
