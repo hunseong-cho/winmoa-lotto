@@ -1,6 +1,6 @@
-// firebase/saveLottoData.ts
+// ✅ /firebase/saveLottoData.ts
 import { db } from "./firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export const saveLottoData = async (data: {
   round: number;
@@ -11,10 +11,10 @@ export const saveLottoData = async (data: {
   try {
     await addDoc(collection(db, "lottoHistory"), {
       ...data,
-      createdAt: new Date(),
+      createdAt: serverTimestamp(), // ✅ 더 정밀한 서버 기준 시간 추천
     });
-    console.log("✅ Firebase 저장 성공");
+    console.log("✅ Firestore 저장 성공");
   } catch (error) {
-    console.error("❌ Firebase 저장 실패:", error);
+    console.error("❌ Firestore 저장 실패:", error);
   }
 };
