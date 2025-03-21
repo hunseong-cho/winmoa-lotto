@@ -4,6 +4,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 import { saveLottoData } from "@/firebase/saveLottoData";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase"; // ❗firebase db 객체 가져오기
 
 const handleSave = () => {
   saveLottoData({
@@ -149,13 +151,6 @@ const LottoGenerator = () => {
     window.addEventListener("resize", handleResize);
   
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    const savedCounter = localStorage.getItem("lotto_generation_counter");
-    if (savedCounter) {
-      setGenerationCounter(parseInt(savedCounter, 10));
-    }
   }, []);
 
   useEffect(() => {
@@ -402,10 +397,8 @@ const LottoGenerator = () => {
         numbers.add(Math.floor(Math.random() * 45) + 1);
       }
       let finalNumbers = [...numbers].sort((a, b) => a - b);
-      setAdditionalNumbers(finalNumbers);
-  
-      // ✅ ID 및 시간 생성
-      const newId = `No-${(generationCounter + 1).toString().padStart(9, "0")}`;
+      setAdditionalNumbers(finalNumbers); 
+
       const now = new Date().toLocaleString("ko-KR", {
         year: "numeric",
         month: "2-digit",
@@ -427,13 +420,9 @@ const LottoGenerator = () => {
   
       // ✅ UI 및 리스트 갱신
       setGeneratedHistory((prev) => [newHistory, ...prev]); // 실시간 반영
-      setGenerationCounter((prev) => prev + 1); // 카운터 증가
-      setGenerationId(newId);
-      setGenerationTime(now);
-  
-      // ✅ localStorage에도 반영
-      localStorage.setItem("lotto_generation_counter", (generationCounter + 1).toString());
-  
+      setGenerationCounter((prev) => prev + 1); // 카운터 증가      
+      setGenerationTime(now);  
+ 
       // ✅ 서버 저장 (선택)
       fetch("/api/lottoHistory", {
         method: "POST",
@@ -474,56 +463,67 @@ const LottoGenerator = () => {
     return "bg-green-500";
   };
   
-  const generateFortuneAndNumbers = (): void => {
+  const generateFortuneAndNumbers = async (): Promise<void> => {
     if (!name || !birthdate) return;
-
-    const today = new Date().toISOString().split("T")[0]; // ✅ 현재 날짜 (YYYY-MM-DD)
-    const userKey = `${name}_${birthdate}_${today}`; // ✅ 고유 키 생성
-    const savedData = localStorage.getItem(userKey);
   
-    if (savedData) {
-      // ✅ 기존 데이터가 있으면 그대로 사용
-      const { star, saju, fortune, luckyNumbers, luckyStoreDirection } = JSON.parse(savedData);
-      setFortuneScore(fortune);
-      setFortuneDetails({ star, saju });
-      setLuckyNumbers(luckyNumbers);
-      setLuckyStoreDirection(luckyStoreDirection);
-    } else {
+    const today = new Date().toISOString().split("T")[0];
+    const userKey = `${name}_${birthdate}_${today}`;
+    const userDocRef = doc(db, "fortuneData", userKey);
   
-    let star = Math.floor(Math.random() * 50);
-    let saju = Math.floor(Math.random() * 50);
-    let fortune = star + saju;
-    setFortuneScore(fortune);
-    setFortuneDetails({ star, saju });
+    try {
+      const userDoc = await getDoc(userDocRef);
   
-    let uniqueNumbers = new Set();
-    while (uniqueNumbers.size < 3) {
-      uniqueNumbers.add(Math.floor(Math.random() * 45) + 1);
+      if (userDoc.exists()) {
+        const { star, saju, fortune, luckyNumbers, luckyStoreDirection } = userDoc.data();
+        setFortuneScore(fortune);
+        setFortuneDetails({ star, saju });
+        setLuckyNumbers(luckyNumbers);
+        setLuckyStoreDirection(luckyStoreDirection);
+      } else {
+        let star = Math.floor(Math.random() * 50);
+        let saju = Math.floor(Math.random() * 50);
+        let fortune = star + saju;
+        setFortuneScore(fortune);
+        setFortuneDetails({ star, saju });
+  
+        let uniqueNumbers = new Set<number>();
+        while (uniqueNumbers.size < 3) {
+          uniqueNumbers.add(Math.floor(Math.random() * 45) + 1);
+        }
+  
+        const luckyNumbers = [...uniqueNumbers];
+        setLuckyNumbers(luckyNumbers);
+  
+        const directions = ["북동", "북서", "남동", "남서", "동", "서", "남", "북"];
+        const luckyStoreDirection = directions[(star + saju) % directions.length];
+        setLuckyStoreDirection(luckyStoreDirection);
+  
+        // 🔥 Firebase 저장
+        await setDoc(userDocRef, {
+          star,
+          saju,
+          fortune,
+          luckyNumbers,
+          luckyStoreDirection,
+          createdAt: new Date().toISOString()
+        });
+      }
+  
+      setInfoGenerated(true);
+      setInputDisabled(true);
+    } catch (error) {
+      console.error("🔥 Firebase 저장 실패:", error);
     }
-    setLuckyNumbers([...uniqueNumbers] as number[]);
-  
-    const directions = ["북동", "북서", "남동", "남서", "동", "서", "남", "북"];
-    setLuckyStoreDirection(directions[(star + saju) % directions.length]);
-
-    // ✅ 생성된 데이터를 localStorage에 저장하여 동일 데이터 보장
-    localStorage.setItem(userKey, JSON.stringify({ star, saju, fortune, luckyNumbers: [...uniqueNumbers], luckyStoreDirection }));
-  }
-  
-    setInfoGenerated(true);
-    setInputDisabled(true);
   };
   
-  const generateLottoNumbers = (): void => {
+  const generateLottoNumbers = async (): Promise<void> => {
     let numbers = new Set([...luckyNumbers]);
     while (numbers.size < 6) {
       numbers.add(Math.floor(Math.random() * 45) + 1);
     }
-
+  
     const finalNumbers = [...numbers].sort((a, b) => a - b);
-
-    // ✅ generationCounter 기반 ID
-    const newId = `No-${generationCounter.toString().padStart(9, "0")}`;
-
+  
     const now = new Date().toLocaleString("ko-KR", {
       year: "numeric",
       month: "2-digit",
@@ -533,40 +533,33 @@ const LottoGenerator = () => {
       second: "2-digit",
       hour12: false,
     }).replace(/\./g, ".").replace(/\. /g, ".");
-
-    setGeneratedNumbers(finalNumbers);
-    setGenerationId(newId);
-    setGenerationTime(now);
-
+  
     const newHistory = {
       round: currentRound,
       date: now,
       numbers: finalNumbers,
       user: maskUserName(name) || "익명",
-      id: newId,
     };
-
-    // ✅ 히스토리 저장
-    const updatedHistory = [...generatedHistory, newHistory];
+  
+    // ✅ Firestore 저장 및 ID 반환
+    const newId = await saveLottoData(newHistory);
+    if (!newId) return;
+  
+    setGeneratedNumbers(finalNumbers);
+    setGenerationId(newId);
+    setGenerationTime(now);
+  
+    const fullHistory = { ...newHistory, id: newId };
+    const updatedHistory = [...generatedHistory, fullHistory];
     setGeneratedHistory(updatedHistory);
-
-    // ✅ Firestore 저장
-    saveLottoData(newHistory);
-
-    // ✅ 서버 저장
+  
+    // ✅ 서버 백업 저장
     fetch("/api/lottoHistory", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newHistory),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(fullHistory),
     }).catch((error) => console.error("로또 기록 저장 오류:", error));
-
-    // ✅ 카운터 증가
-    const nextCounter = generationCounter + 1;
-    setGenerationCounter(nextCounter);
-    localStorage.setItem("lotto_generation_counter", String(nextCounter));
-  }; 
+  };  
 
   const getLottoRound = (entry: { round?: number; date?: string }) =>
   entry.round || calculateLottoRound(entry.date);
