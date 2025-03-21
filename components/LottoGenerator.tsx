@@ -642,12 +642,10 @@ const LottoGenerator = () => {
   
 
   const maskUserName = (name: string): string => {
-    if (!name || typeof name !== "string") return "익명"; // ✅ 방어 코드 추가
-    const length = name.length;  
-    if (length === 1) return name + "*"; // ✅ 1글자일 경우 처리
-    if (length === 2) return name[0] + "*"; // ✅ 2글자일 경우 처리
-    if (length === 3) return name[0] + "*" + name[2]; // ✅ 3글자일 경우 처리    
-    return name[0] + "*".repeat(Math.max(0, length - 2)) + name[length - 1]; // ✅ 음수 방지
+    if (!name || typeof name !== "string") return "익명"; // 방어 코드
+    const length = name.length;
+    if (length === 1) return "*"; // 1글자일 때는 그냥 *
+    return "*".repeat(length - 1) + name[length - 1]; // 앞 다 마스킹, 마지막만 노출
   };
 
   return (    
