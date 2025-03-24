@@ -6,6 +6,7 @@ import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 import { saveLottoData } from "@/firebase/saveLottoData";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase"; // ❗firebase db 객체 가져오기
+import { generateSecureKey } from "../utils/encryption"; // 상대경로로 고정
 
 const handleSave = () => {
   saveLottoData({
@@ -471,7 +472,7 @@ const LottoGenerator = () => {
     if (!name || !birthdate) return;
   
     const today = new Date().toISOString().split("T")[0];
-    const userKey = `${name}_${birthdate}_${today}`;
+    const userKey = generateSecureKey(name, birthdate, today);
     const userDocRef = doc(db, "fortuneData", userKey);
   
     try {
