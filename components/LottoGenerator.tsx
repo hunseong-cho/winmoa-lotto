@@ -432,7 +432,7 @@ const LottoGenerator = () => {
       const fullHistory = { ...newHistory, id: newId };
 
       setAdditionalNumbers(finalNumbers);
-      setGeneratedHistory((prev) => [fullHistory, ...prev]);
+      await fetchLottoHistory();
       setGenerationTime(now);
       setGenerationId(newId); // 추가된 ID 반영
 
@@ -552,7 +552,7 @@ const LottoGenerator = () => {
       round: currentRound,
       date: now,
       numbers: finalNumbers,
-      user: maskUserName(name) || "익명",
+      user: maskUserName(name), 
     };
   
     // ✅ Firestore 저장 및 ID 반환
@@ -648,15 +648,7 @@ const LottoGenerator = () => {
     const startIdx = (currentPage - 1) * itemsPerPage;
     const endIdx = startIdx + itemsPerPage;
     return generatedHistory.slice(startIdx, endIdx);
-  }, [generatedHistory, currentPage, itemsPerPage]);
-  
-
-  const maskUserName = (name: string): string => {
-    if (!name || typeof name !== "string") return "익명"; // 방어 코드
-    const length = name.length;
-    if (length === 1) return "*"; // 1글자일 때는 그냥 *
-    return "*".repeat(length - 1) + name[length - 1]; // 앞 다 마스킹, 마지막만 노출
-  };
+  }, [generatedHistory, currentPage, itemsPerPage]);  
 
   return (    
     <div className="w-full bg-white min-h-screen pt-0">
@@ -779,7 +771,7 @@ const LottoGenerator = () => {
           </div>
 
           <div className="text-center text-xs text-gray-500">
-            by <span className="font-semibold">{maskUserName(name) || "guest"}</span> 🕒 {generationTime}
+            by <span className="font-semibold">{name || "guest"}</span> 🕒 {generationTime}
           </div>
         </div>
       )}
