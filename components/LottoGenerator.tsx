@@ -741,7 +741,7 @@ const LottoGenerator = () => {
         </div>
 
         <div className="text-center text-xs text-gray-500">
-          by <span className="font-semibold">{name || "guest"}</span> 🕒 {generationTime}
+          by <span className="font-semibold">guest</span> 🕒 {generationTime}
         </div>
       </div>
     )}
@@ -770,7 +770,7 @@ const LottoGenerator = () => {
           </div>
 
           <div className="text-center text-xs text-gray-500">
-            by <span className="font-semibold">{name || "guest"}</span> 🕒 {generationTime}
+            by <span className="font-semibold">guest</span> 🕒 {generationTime}
           </div>
         </div>
       )}
