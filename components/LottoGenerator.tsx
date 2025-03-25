@@ -755,7 +755,7 @@ const LottoGenerator = () => {
         </div>
 
         <div className="text-center text-xs text-gray-500">
-          by <span className="font-semibold">guest</span> 🕒 {generationTime}
+          by <span className="font-semibold">by guest</span> 🕒 {generationTime}
         </div>
       </div>
     )}
@@ -784,7 +784,7 @@ const LottoGenerator = () => {
           </div>
 
           <div className="text-center text-xs text-gray-500">
-            by <span className="font-semibold">guest</span> 🕒 {generationTime}
+            by <span className="font-semibold">by guest</span> 🕒 {generationTime}
           </div>
         </div>
       )}
@@ -965,7 +965,7 @@ const LottoGenerator = () => {
       {generatedHistory.length > 0 && (
         <div className="mt-8 p-4 border-t">
           <h3 className="text-sm md:text-base lg:text-lg leading-loose font-bold text-gray-600 text-center">
-            📌 모든 사용자 누적 로또번호 생성 내역
+            📌 로또번호 생성기 모든 사용자 생성 내역
           </h3>
 
           {/* 페이지네이션 컨트롤 */}
