@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         ...data,
         id: snap.id,
-        user: maskedUser,
+        user: "guest",
         createdAt: data.createdAt?.toDate?.() ?? data.createdAt ?? "",
       });
     }
