@@ -8,19 +8,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase"; // ❗firebase db 객체 가져오기
 import { generateSecureKey } from "../utils/encryption"; // 상대경로로 고정
 import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추가
-import { formatDate } from "@/utils/date";
-    
-const fetchLottoHistory = async () => {
-  try {
-    const res = await fetch("/api/lottoHistory");
-    if (!res.ok) throw new Error("서버 응답 오류");
-    const data = await res.json();
-    setGeneratedHistory(data || []);
-  } catch (error) {
-    console.error("로또 히스토리 로딩 실패:", error);
-    setGeneratedHistory([]);
-  }
-};
+import { formatDate } from "@/utils/date";  
 
 type LottoEntry = {
   round: number;
@@ -103,6 +91,17 @@ const LottoGenerator = () => {
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthDay, setBirthDay] = useState<string>("");
   const [luckyNumbers, setLuckyNumbers] = useState<number[]>([]);
+  const fetchLottoHistory = async () => {
+    try {
+      const res = await fetch("/api/lottoHistory");
+      if (!res.ok) throw new Error("서버 응답 오류");
+      const data = await res.json();
+      setGeneratedHistory(data || []);
+    } catch (error) {
+      console.error("로또 히스토리 로딩 실패:", error);
+      setGeneratedHistory([]);
+    }
+  };
   const [generatedNumbers, setGeneratedNumbers] = useState<number[]>([]);
   const [luckyStoreDirection, setLuckyStoreDirection] = useState<string>("");
   const [fortuneScore, setFortuneScore] = useState<number | null>(null);
