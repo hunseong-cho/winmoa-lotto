@@ -1,3 +1,6 @@
+import { getDocs, getDoc, doc, collection } from "firebase/firestore";
+import { db } from "@/firebase/firebaseConfig";
+
 export default async function handler(req, res) {
   const { id } = req.query;
 
@@ -22,7 +25,7 @@ export default async function handler(req, res) {
     }
 
     // ✅ 전체 조회 로직
-    const snapshot = await getDocs(collection(db, "lottoHistory"));
+    const snap = await getDoc(doc(db, "lottoHistory", id));
     const history = snapshot.docs.map((doc) => {
       const data = doc.data();
       const maskedUser = "guest";
