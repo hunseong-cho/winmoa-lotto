@@ -11,6 +11,14 @@ import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추�
 import { maskEncryptedUser } from "../utils/mask"; // 또는 "@/utils/mask"
 import { formatDate } from "@/utils/date";
 
+type LottoEntry = {
+  round: number;
+  date: string;
+  numbers: number[];
+  user: string;
+  id: string;
+  createdAt?: Date | string | { seconds: number };
+};
 
 const handleSave = () => {
   saveLottoData({
@@ -130,6 +138,7 @@ const LottoGenerator = () => {
   const [generationCounter, setGenerationCounter] = useState<number>(1);
   const [generationId, setGenerationId] = useState<string>("");
   const [generationTime, setGenerationTime] = useState<string>("");
+  const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
   const [itemsPerPage, setItemsPerPage] = useState<number>(16);
   const bannerImages = [
       {
