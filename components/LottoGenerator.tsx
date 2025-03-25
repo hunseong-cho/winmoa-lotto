@@ -7,6 +7,8 @@ import { saveLottoData } from "@/firebase/saveLottoData";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase"; // ❗firebase db 객체 가져오기
 import { generateSecureKey } from "../utils/encryption"; // 상대경로로 고정
+import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추가
+import { maskEncryptedUser } from "../utils/mask"; // 또는 "@/utils/mask"
 
 const handleSave = () => {
   saveLottoData({
@@ -413,7 +415,7 @@ const LottoGenerator = () => {
         round: currentRound,
         date: now,
         numbers: finalNumbers,
-        user: maskUserName(name) || "익명",
+        user: encryptData(name), // ✅ 암호화된 사용자 저장
       };
 
       // ✅ Firestore 저장해서 ID 받아오기
@@ -997,7 +999,7 @@ const LottoGenerator = () => {
 
                 {/* ✅ 생성된 시간 마지막 출력 */}
                 <div className="flex gap-1 mt-2 text-gray-500 text-sm">
-                  {entry.date || "날짜 없음"} ({maskUserName(entry.user)})
+                  {entry.date || "날짜 없음"} ({maskEncryptedUser(entry.user)})
                 </div>
 
               </div>
