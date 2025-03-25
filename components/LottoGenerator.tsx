@@ -645,15 +645,23 @@ const LottoGenerator = () => {
 
   const currentItems = useMemo(() => {
     const sorted = [...generatedHistory].sort((a, b) => {
-      const dateA = new Date(a.createdAt || a.date).getTime();
-      const dateB = new Date(b.createdAt || b.date).getTime();
-      return dateB - dateA; // 🟢 최신이 위로
+      const getTime = (val: any): number => {
+        if (!val) return 0;
+        if (typeof val === "object" && "seconds" in val) {
+          return new Date(val.seconds * 1000).getTime();
+        }
+        return new Date(val).getTime();
+      };
+  
+      const dateA = getTime(a.createdAt || a.date);
+      const dateB = getTime(b.createdAt || b.date);
+      return dateB - dateA; // 🔽 최신순 정렬
     });
   
     const startIdx = (currentPage - 1) * itemsPerPage;
     const endIdx = startIdx + itemsPerPage;
     return sorted.slice(startIdx, endIdx);
-  }, [generatedHistory, currentPage, itemsPerPage]);
+  }, [generatedHistory, currentPage, itemsPerPage]);  
 
   return (    
     <div className="w-full bg-white min-h-screen pt-0">
