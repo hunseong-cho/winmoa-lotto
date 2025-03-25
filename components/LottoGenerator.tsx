@@ -94,9 +94,6 @@ const LottoGenerator = () => {
   const [luckyNumbers, setLuckyNumbers] = useState<number[]>([]);
   const [generatedNumbers, setGeneratedNumbers] = useState<number[]>([]);
   const [luckyStoreDirection, setLuckyStoreDirection] = useState<string>("");
-  const [generatedHistory, setGeneratedHistory] = useState<
-    { round: number; date: string; numbers: number[]; user: string; id: string }[]
-  >([]);
   const [fortuneScore, setFortuneScore] = useState<number | null>(null);
   const [fortuneDetails, setFortuneDetails] = useState<{ star: number; saju: number }>({ star: 0, saju: 0 });
   const [inputDisabled, setInputDisabled] = useState<boolean>(false);
