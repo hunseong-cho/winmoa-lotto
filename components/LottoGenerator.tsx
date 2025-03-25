@@ -9,6 +9,18 @@ import { db } from "@/lib/firebase"; // ❗firebase db 객체 가져오기
 import { generateSecureKey } from "../utils/encryption"; // 상대경로로 고정
 import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추가
 import { formatDate } from "@/utils/date";
+    
+const fetchLottoHistory = async () => {
+  try {
+    const res = await fetch("/api/lottoHistory");
+    if (!res.ok) throw new Error("서버 응답 오류");
+    const data = await res.json();
+    setGeneratedHistory(data || []);
+  } catch (error) {
+    console.error("로또 히스토리 로딩 실패:", error);
+    setGeneratedHistory([]);
+  }
+};
 
 type LottoEntry = {
   round: number;
@@ -195,20 +207,7 @@ const LottoGenerator = () => {
     setCurrentRound(calculateLottoRound()); // ✅ 현재 회차 계산
   }, []);
 
-  useEffect(() => {
-    // ✅ 1. 로또 히스토리 불러오기 (초기 로드 시 1회 실행)
-    const fetchLottoHistory = async () => {
-      try {
-        const res = await fetch("/api/lottoHistory");
-        if (!res.ok) throw new Error("서버 응답 오류");
-        const data = await res.json();
-        setGeneratedHistory(data || []);
-      } catch (error) {
-        console.error("로또 히스토리 로드 중 오류:", error);
-        setGeneratedHistory([]);
-      }
-    };
-  
+  useEffect(() => {  
     fetchLottoHistory();
   
     // ✅ 2. 운세 정보 생성 후 자동으로 로또 번호 생성
@@ -389,7 +388,7 @@ const LottoGenerator = () => {
     if (isCounting) return;
     setIsCounting(true);
     setCountdown(5);
-
+  
     let timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -400,14 +399,14 @@ const LottoGenerator = () => {
         return prev - 1;
       });
     }, 1000);
-
+  
     setTimeout(async () => {
       const numbers = new Set<number>([...luckyNumbers]);
       while (numbers.size < 6) {
         numbers.add(Math.floor(Math.random() * 45) + 1);
       }
       let finalNumbers = [...numbers].sort((a, b) => a - b);
-
+  
       const now = new Date().toLocaleString("ko-KR", {
         year: "numeric",
         month: "2-digit",
@@ -417,36 +416,35 @@ const LottoGenerator = () => {
         second: "2-digit",
         hour12: false,
       }).replace(/\./g, ".").replace(/\. /g, ".");
-
+  
       const newHistory = {
         round: currentRound,
         date: now,
         numbers: finalNumbers,
-        user: encryptData(name), // ✅ 암호화된 사용자 저장
+        user: encryptData(name), // 🔐 암호화된 사용자 저장
       };
-
-      // ✅ Firestore 저장해서 ID 받아오기
+  
       const newId = await saveLottoData(newHistory);
       if (!newId) return;
-
-      const fullHistory = { ...newHistory, id: newId };
-
+  
+      // ✅ 추가 번호 로컬 상태 업데이트
       setAdditionalNumbers(finalNumbers);
-      await fetchLottoHistory();
       setGenerationTime(now);
-      setGenerationId(newId); // 추가된 ID 반영
+      setGenerationId(newId);
 
+      await fetchLottoHistory();
+  
       // ✅ 서버 백업 저장
       fetch("/api/lottoHistory", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fullHistory),
+        body: JSON.stringify({ ...newHistory, id: newId }),
       }).catch((err) => console.error("추가 기록 저장 실패:", err));
+  
+      // ✅ 핵심: 서버에서 복호화 + 마스킹된 유저 포함 데이터 다시 불러오기      
     }, 5000);
   };
-
-  
-  
+   
   
   // ✅ 기존: fetchWinningNumbers() 실행용 useEffect
   useEffect(() => {
@@ -552,27 +550,29 @@ const LottoGenerator = () => {
       round: currentRound,
       date: now,
       numbers: finalNumbers,
-      user: maskUserName(name), 
+      user: encryptData(name), // 🔐 암호화 저장
     };
   
-    // ✅ Firestore 저장 및 ID 반환
     const newId = await saveLottoData(newHistory);
     if (!newId) return;
   
     setGeneratedNumbers(finalNumbers);
     setGenerationId(newId);
     setGenerationTime(now);
+
+    await fetchLottoHistory();
   
     const fullHistory = { ...newHistory, id: newId };
-    const updatedHistory = [...generatedHistory, fullHistory];
-    setGeneratedHistory(updatedHistory);
   
-    // ✅ 서버 백업 저장
+    // ✅ 서버 저장
     fetch("/api/lottoHistory", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(fullHistory),
     }).catch((error) => console.error("로또 기록 저장 오류:", error));
+  
+    // ✅ 서버에서 복호화+마스킹된 이력 다시 불러오기
+    await fetchLottoHistory();
   };  
 
   const getLottoRound = (entry: { round?: number; date?: string }) =>
@@ -742,7 +742,7 @@ const LottoGenerator = () => {
         </div>
 
         <div className="text-center text-xs text-gray-500">
-          by <span className="font-semibold">{maskUserName(name) || "guest"}</span> 🕒 {generationTime}
+          by <span className="font-semibold">{name || "guest"}</span> 🕒 {generationTime}
         </div>
       </div>
     )}
