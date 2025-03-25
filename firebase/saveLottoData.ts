@@ -1,14 +1,14 @@
 // firebase/saveLottoData.ts
 import { db } from "./firebaseConfig";
 import { doc, runTransaction, setDoc, getDoc } from "firebase/firestore";
-import { encryptData } from "@/utils/encryption"; // 🔐 AES 암호화 유틸 추가
+import { encryptData } from "@/utils/encryption";
 
-// 로또 데이터 저장 함수
 export const saveLottoData = async (data: {
   round: number;
   numbers: number[];
   date: string;
   user?: string;
+  type?: "기본" | "추가"; // ✅ type 허용
 }) => {
   try {
     const counterRef = doc(db, "lotto_counter", "generation_counter");
@@ -23,19 +23,19 @@ export const saveLottoData = async (data: {
 
       const nextId = `No-${String(currentCount).padStart(9, "0")}`;
 
-      // ✅ user 값 AES 암호화
       const encryptedUser = data.user ? encryptData(data.user) : undefined;
 
-      // ✅ 로또 기록 저장 (ID 기준으로 문서 생성)
       const lottoDocRef = doc(db, "lottoHistory", nextId);
+
+      // ✅ type 필드 추가 포함
       transaction.set(lottoDocRef, {
         ...data,
-        user: encryptedUser, // 🔐 암호화된 user 저장
+        type: data.type || "기본", // 🔥 구분값 기본 지정
+        user: encryptedUser,
         id: nextId,
         createdAt: new Date(),
       });
 
-      // ✅ 카운터 갱신
       transaction.set(counterRef, { count: currentCount });
 
       return nextId;

@@ -146,6 +146,7 @@ const LottoGenerator = () => {
   const [generationId, setGenerationId] = useState<string>("");
   const [generationTime, setGenerationTime] = useState<string>("");
   const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
+  const [generationNumber, setGenerationNumber] = useState<number | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(16);
   const bannerImages = [
       {
@@ -270,6 +271,18 @@ const LottoGenerator = () => {
   
     return stats;
   };
+
+  const fetchGenerationCount = async () => {
+    try {
+      const res = await fetch("/api/lottoCount");
+      if (!res.ok) throw new Error("카운트 API 호출 실패");
+  
+      const data = await res.json();
+      setGenerationNumber(data.count + 1); // ✅ 다음 번호를 위한 카운팅
+    } catch (err) {
+      console.error("🔥 카운트 API 오류:", err);
+    }
+  };  
   
   const calculateRoundBasedStats = (
     history: { round: number; numbers: number[] }[],
@@ -323,6 +336,18 @@ const LottoGenerator = () => {
     return result;
   };
 
+  // ✅ 생성 카운트 API 호출 함수 (기본 + 추가 전체 합산)
+  const fetchGenerationCount = async () => {
+    try {
+      const res = await fetch("/api/lottoCount");
+      if (!res.ok) throw new Error("카운트 API 호출 실패");
+
+      const data = await res.json();
+      setGenerationNumber(data.count + 1); // ✅ 다음 번호 카운팅
+    } catch (err) {
+      console.error("🔥 카운트 API 오류:", err);
+    }
+  };
 
   const fetchWinningNumbers = async () => {
     try {
@@ -386,6 +411,7 @@ const LottoGenerator = () => {
   const generateAdditionalNumbers = async (): Promise<void> => {
     if (isCounting) return;
     setIsCounting(true);
+    await fetchGenerationCount();
     setCountdown(5);
   
     let timer = setInterval(() => {
@@ -420,7 +446,8 @@ const LottoGenerator = () => {
         round: currentRound,
         date: now,
         numbers: finalNumbers,
-        user: encryptData(name), // 🔐 암호화된 사용자 저장
+        user: encryptData(name),
+        type: "기본", // ✅ 추가
       };
   
       const newId = await saveLottoData(newHistory);
@@ -528,6 +555,8 @@ const LottoGenerator = () => {
   };
   
   const generateLottoNumbers = async (): Promise<void> => {
+    await fetchGenerationCount();
+    
     let numbers = new Set([...luckyNumbers]);
     while (numbers.size < 6) {
       numbers.add(Math.floor(Math.random() * 45) + 1);
@@ -549,7 +578,8 @@ const LottoGenerator = () => {
       round: currentRound,
       date: now,
       numbers: finalNumbers,
-      user: encryptData(name), // 🔐 암호화 저장
+      user: encryptData(name),
+      type: "추가", // ✅ 추가
     };
   
     const newId = await saveLottoData(newHistory);
@@ -736,8 +766,10 @@ const LottoGenerator = () => {
     {generatedNumbers.length > 0 && (
       <div className="mt-10 w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
         <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">      
-        번호 생성 완료! <span className="text-blue-600 font-bold">({generationId})</span>      
-        </div>
+        번호 생성 완료!{" "}
+        <span className="text-blue-600 font-bold">
+          ({`No-${generationNumber?.toString().padStart(9, "0")}`})
+        </span>
 
         <div className="flex justify-center items-center gap-2 mb-2">
           <span className="font-bold text-sm text-gray-800">{currentRound}회</span>
@@ -767,9 +799,7 @@ const LottoGenerator = () => {
           <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
             🎉 추가 생성 완료!{" "}
             <span className="text-blue-600 font-bold">
-              ({`No-${(
-                parseInt(generationId?.split("-")[1] || "0", 10) + 1
-              ).toString().padStart(9, "0")}`})
+              ({`No-${generationNumber?.toString().padStart(9, "0")}`})
             </span>
           </div>
 
