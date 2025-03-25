@@ -965,7 +965,7 @@ const LottoGenerator = () => {
       {generatedHistory.length > 0 && (
         <div className="mt-8 p-4 border-t">
           <h3 className="text-sm md:text-base lg:text-lg leading-loose font-bold text-gray-600 text-center">
-            📌 {currentRound}회차 모든 사용자 로또번호 생성 내역
+            📌 모든 사용자 누적 로또번호 생성 내역
           </h3>
 
           {/* 페이지네이션 컨트롤 */}
