@@ -9,6 +9,8 @@ import { db } from "@/lib/firebase"; // ❗firebase db 객체 가져오기
 import { generateSecureKey } from "../utils/encryption"; // 상대경로로 고정
 import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추가
 import { maskEncryptedUser } from "../utils/mask"; // 또는 "@/utils/mask"
+import { formatDate } from "@/utils/date";
+
 
 const handleSave = () => {
   saveLottoData({
@@ -999,7 +1001,7 @@ const LottoGenerator = () => {
 
                 {/* ✅ 생성된 시간 마지막 출력 */}
                 <div className="flex gap-1 mt-2 text-gray-500 text-sm">
-                  {entry.date || "날짜 없음"} ({maskEncryptedUser(entry.user)})
+                  {formatDate(entry.createdAt || entry.date)} ({maskEncryptedUser(entry.user)})
                 </div>
 
               </div>
