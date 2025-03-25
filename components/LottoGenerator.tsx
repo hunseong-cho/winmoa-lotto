@@ -336,19 +336,6 @@ const LottoGenerator = () => {
     return result;
   };
 
-  // ✅ 생성 카운트 API 호출 함수 (기본 + 추가 전체 합산)
-  const fetchGenerationCount = async () => {
-    try {
-      const res = await fetch("/api/lottoCount");
-      if (!res.ok) throw new Error("카운트 API 호출 실패");
-
-      const data = await res.json();
-      setGenerationNumber(data.count + 1); // ✅ 다음 번호 카운팅
-    } catch (err) {
-      console.error("🔥 카운트 API 오류:", err);
-    }
-  };
-
   const fetchWinningNumbers = async () => {
     try {
       const res = await fetch("/api/proxyWinningNumbers"); // ✅ 서버 프록시 API 호출
@@ -770,6 +757,7 @@ const LottoGenerator = () => {
         <span className="text-blue-600 font-bold">
           ({`No-${generationNumber?.toString().padStart(9, "0")}`})
         </span>
+      </div>
 
         <div className="flex justify-center items-center gap-2 mb-2">
           <span className="font-bold text-sm text-gray-800">{currentRound}회</span>
