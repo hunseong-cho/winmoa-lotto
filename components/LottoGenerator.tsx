@@ -644,10 +644,16 @@ const LottoGenerator = () => {
   const totalPages = Math.ceil(generatedHistory.length / itemsPerPage);
 
   const currentItems = useMemo(() => {
+    const sorted = [...generatedHistory].sort((a, b) => {
+      const dateA = new Date(a.createdAt || a.date).getTime();
+      const dateB = new Date(b.createdAt || b.date).getTime();
+      return dateB - dateA; // 🟢 최신이 위로
+    });
+  
     const startIdx = (currentPage - 1) * itemsPerPage;
     const endIdx = startIdx + itemsPerPage;
-    return generatedHistory.slice(startIdx, endIdx);
-  }, [generatedHistory, currentPage, itemsPerPage]);  
+    return sorted.slice(startIdx, endIdx);
+  }, [generatedHistory, currentPage, itemsPerPage]);
 
   return (    
     <div className="w-full bg-white min-h-screen pt-0">
