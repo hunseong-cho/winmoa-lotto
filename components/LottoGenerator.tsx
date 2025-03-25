@@ -434,7 +434,7 @@ const LottoGenerator = () => {
         date: now,
         numbers: finalNumbers,
         user: encryptData(name),
-        type: "기본", // ✅ 추가
+        type: "기본" as const, // ✅ 추가
       };
   
       const newId = await saveLottoData(newHistory);
@@ -566,7 +566,7 @@ const LottoGenerator = () => {
       date: now,
       numbers: finalNumbers,
       user: encryptData(name),
-      type: "추가", // ✅ 추가
+      type: "추가" as const, // ✅ 추가
     };
   
     const newId = await saveLottoData(newHistory);
