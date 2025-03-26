@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 import { saveLottoData } from "@/firebase/saveLottoData";
@@ -333,7 +333,9 @@ const LottoGenerator = () => {
     return result;
   };
 
-  const fetchWinningNumbers = useCallback(() => {
+  const fetchWinningNumbersRef = useRef<ReturnType<typeof debounce> | null>(null);
+
+  useEffect(() => {
     const debouncedFetch = debounce(async () => {
       try {
         const res = await fetch("/api/proxyWinningNumbers");
@@ -341,12 +343,12 @@ const LottoGenerator = () => {
           const errorText = await res.text();
           throw new Error(`API 오류: ${res.status} - ${errorText}`);
         }
-  
+
         const data = await res.json();
         if (data.error) return console.error("API 오류 발생:", data.error);
-  
+
         console.log("✅ 최신 당첨번호:", data);
-  
+
         setLatestWinningNumbers({
           round: data.round,
           date: data.date,
@@ -356,7 +358,7 @@ const LottoGenerator = () => {
           firstWinnerCount: data.firstWinnerCount,
           firstWinAmount: data.firstWinAmount,
         });
-  
+
         setWinningMap((prev) => ({
           ...prev,
           [data.round]: {
@@ -367,19 +369,19 @@ const LottoGenerator = () => {
       } catch (error) {
         console.error("🔥 1등 당첨번호 조회 실패:", error);
       }
-    }, 1000);
-  
+    }, 1000); // ✅ 1초 debounce
+
+    // Ref에 저장
+    fetchWinningNumbersRef.current = debouncedFetch;
+
+    // 최초 1회 호출
     debouncedFetch();
-  }, []);
-  
-  
-  // ✅ useEffect를 통해 최신 회차 1등 당첨번호 가져오기
-  useEffect(() => {
-    fetchWinningNumbers();
+
+    // ✅ cleanup: 언마운트 시 cancel()
     return () => {
-      fetchWinningNumbers.cancel?.(); // lodash.debounce 제공 기능
+      debouncedFetch.cancel();
     };
-  }, [fetchWinningNumbers]);
+  }, []);  
   
   useEffect(() => {
     if (!latestWinningNumbers?.round || !generatedHistory?.length) return;
