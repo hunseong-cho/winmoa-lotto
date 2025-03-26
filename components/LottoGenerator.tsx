@@ -86,6 +86,22 @@ type WinningNumbersType = {
 
 
 const LottoGenerator = () => {
+  const [additionalPage, setAdditionalPage] = useState<number>(1);
+  const filteredAdditionalHistory = useMemo(() => {
+    return generatedHistory
+      .filter((entry) => entry.type === "추가")
+      .sort((a, b) => {
+        const getTime = (val: any): number => {
+          if (!val) return 0;
+          if (typeof val === "object" && "seconds" in val) {
+            return new Date(val.seconds * 1000).getTime();
+          }
+          return new Date(val).getTime();
+        };
+        return getTime(b.createdAt || b.date) - getTime(a.createdAt || a.date);
+      })
+      .slice(0, 5);
+  }, [generatedHistory]);
   const [name, setName] = useState<string>("");
   const [birthdate, setBirthdate] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
@@ -163,6 +179,8 @@ const LottoGenerator = () => {
       // 추가 배너들...
     ];
   const bannerDelay = 3000; // 슬라이드 전환 시간(ms)
+  const currentAdditional = filteredAdditionalHistory[additionalPage - 1];
+  const totalAdditionalPages = filteredAdditionalHistory.length;
 
   useEffect(() => {
     const handleResize = () => {
@@ -802,6 +820,50 @@ const LottoGenerator = () => {
 
           <div className="text-center text-xs text-gray-500">
             by <span className="font-semibold">by guest</span> 🕒 {generationTime}
+          </div>
+        </div>
+      )}
+
+      {currentAdditional && (
+        <div className="mt-6 w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
+          <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-purple-700 border-b border-purple-200 pb-2 mb-4">
+            📁 최근 추가 생성 번호 ({additionalPage}/{totalAdditionalPages})
+          </div>
+
+          <div className="flex justify-center items-center gap-2 mb-2">
+            <span className="font-bold text-sm text-gray-800">{currentAdditional.round}회</span>
+            {currentAdditional.numbers.map((num, index) => (
+              <motion.span
+                key={`recent-add-${index}`}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: index * 0.2 }}
+                className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full text-center flex items-center justify-center font-bold`}
+              >
+                {num}
+              </motion.span>
+            ))}
+          </div>
+
+          <div className="text-center text-xs text-gray-500">
+            by {currentAdditional.user} 🕒 {formatDate(currentAdditional.createdAt || currentAdditional.date)}
+          </div>
+
+          <div className="flex justify-center gap-4 mt-4">
+            <button
+              onClick={() => setAdditionalPage((prev) => Math.max(prev - 1, 1))}
+              disabled={additionalPage === 1}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+            >
+              ◀ 이전
+            </button>
+            <button
+              onClick={() => setAdditionalPage((prev) => Math.min(prev + 1, totalAdditionalPages))}
+              disabled={additionalPage === totalAdditionalPages}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+            >
+              다음 ▶
+            </button>
           </div>
         </div>
       )}
