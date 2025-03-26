@@ -569,7 +569,6 @@ const LottoGenerator = () => {
     const newId = await saveLottoData(newHistory);
     if (!newId) return;
   
-    setGeneratedNumbers(finalNumbers);
     setGenerationId(newId);
     setGenerationTime(now);
 
