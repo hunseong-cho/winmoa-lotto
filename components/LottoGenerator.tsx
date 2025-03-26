@@ -6,10 +6,36 @@ import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 import { saveLottoData } from "@/firebase/saveLottoData";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase"; // ❗firebase db 객체 가져오기
+import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import { generateSecureKey } from "../utils/encryption"; // 상대경로로 고정
 import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추가
 import { formatDate } from "@/utils/date";  
 import debounce from "lodash.debounce";
+
+const totalAdditionalPages = todayAdditions.length;
+const currentAdditionalEntry = todayAdditions[additionalPage - 1];
+
+const getTodayMidnight = () => {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+
+const fetchTodayAdditionsByUser = async (userId: string) => {
+  const today = getTodayMidnight();
+
+  const q = query(
+    collection(db, "lottoHistory"),
+    where("user", "==", userId),
+    where("type", "==", "추가"),
+    where("createdAt", ">=", today),
+    orderBy("createdAt", "desc"),
+    limit(5)
+  );
+
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
 
 type LottoEntry = {
   round: number;
@@ -149,6 +175,7 @@ const LottoGenerator = () => {
   const [generationId, setGenerationId] = useState<string>("");
   const [generationTime, setGenerationTime] = useState<string>("");  
   const [generationNumber, setGenerationNumber] = useState<number | null>(null);
+  const [todayAdditions, setTodayAdditions] = useState<any[]>([]);  
   const [itemsPerPage, setItemsPerPage] = useState<number>(16);
   const bannerImages = [
       {
@@ -176,6 +203,10 @@ const LottoGenerator = () => {
 
   const totalAdditionalPages = additionalHistory.length;
   const currentAdditionalEntry = additionalHistory[additionalPage - 1];
+
+  useEffect(() => {
+    fetchTodayAdditionsByUser(currentUser).then(setTodayAdditions);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -216,6 +247,8 @@ const LottoGenerator = () => {
   useEffect(() => {
     setCurrentRound(calculateLottoRound()); // ✅ 현재 회차 계산
   }, []);
+
+  const currentUser = "guest";
 
   useEffect(() => {  
     fetchLottoHistory();
@@ -789,7 +822,7 @@ const LottoGenerator = () => {
 
 
       {/* ✅ 추가 생성된 번호 (초기화 기능 포함) */}
-      {currentAdditionalEntry && (
+      {generatedNumbers.length > 0 && currentAdditionalEntry && (
         <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md mt-6">
           <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
             🎉 추가 생성 완료!{" "}
@@ -802,7 +835,7 @@ const LottoGenerator = () => {
             <span className="font-bold text-sm text-gray-800">
               {currentAdditionalEntry.round}회
             </span>
-            {currentAdditionalEntry.numbers.map((num, index) => (
+            {currentAdditionalEntry.numbers.map((num: number, index: number) => (
               <motion.span
                 key={`add-${num}-${index}`}
                 initial={{ scale: 0, opacity: 0 }}
