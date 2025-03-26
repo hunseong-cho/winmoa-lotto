@@ -439,7 +439,6 @@ const LottoGenerator = () => {
       if (!newId) return;
   
       // ✅ 추가 번호 로컬 상태 업데이트
-      setAdditionalNumbers(finalNumbers);
       setGenerationTime(now);
       setGenerationId(newId);
 
