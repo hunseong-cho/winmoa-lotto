@@ -12,9 +12,6 @@ import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추�
 import { formatDate } from "@/utils/date";  
 import debounce from "lodash.debounce";
 
-const totalAdditionalPages = todayAdditions.length;
-const currentAdditionalEntry = todayAdditions[additionalPage - 1];
-
 const getTodayMidnight = () => {
   const date = new Date();
   date.setHours(0, 0, 0, 0);
@@ -190,7 +187,7 @@ const LottoGenerator = () => {
       },
       // 추가 배너들...
     ];
-  const bannerDelay = 3000; // 슬라이드 전환 시간(ms)
+  const bannerDelay = 3000; // 슬라이드 전환 시간(ms)  
 
   const [additionalPage, setAdditionalPage] = useState(1);
   const maxAdditions = 5;
@@ -201,9 +198,9 @@ const LottoGenerator = () => {
       .slice(0, maxAdditions);
   }, [generatedHistory]);
 
-  const totalAdditionalPages = additionalHistory.length;
-  const currentAdditionalEntry = additionalHistory[additionalPage - 1];
-
+  const totalAdditionalPages = todayAdditions.length;
+  const currentAdditionalEntry = todayAdditions[additionalPage - 1];
+  
   useEffect(() => {
     fetchTodayAdditionsByUser(currentUser).then(setTodayAdditions);
   }, []);
