@@ -202,8 +202,10 @@ const LottoGenerator = () => {
   const currentAdditionalEntry = todayAdditions[additionalPage - 1];
 
   useEffect(() => {
-    fetchTodayAdditionsByUser(currentUser).then(setTodayAdditions);
-  }, []);
+    if (!name) return;
+    const encryptedUser = encryptData(name);
+    fetchTodayAdditionsByUser(encryptedUser).then(setTodayAdditions);
+  }, [name]);
 
   useEffect(() => {
     const handleResize = () => {
