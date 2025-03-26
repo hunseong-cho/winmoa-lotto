@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Button from "@/components/Button";
 import { motion } from "framer-motion"; // ✅ Framer Motion 추가
 import { saveLottoData } from "@/firebase/saveLottoData";
@@ -9,6 +9,7 @@ import { db } from "@/lib/firebase"; // ❗firebase db 객체 가져오기
 import { generateSecureKey } from "../utils/encryption"; // 상대경로로 고정
 import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추가
 import { formatDate } from "@/utils/date";  
+import debounce from "lodash.debounce";
 
 type LottoEntry = {
   round: number;
@@ -186,10 +187,6 @@ const LottoGenerator = () => {
   }, [latestWinningNumbers]);
 
   useEffect(() => {
-    fetchWinningNumbers(); // ✅ 컴포넌트 마운트 시 1등 당첨번호 불러오기
-  }, []);  
-
-  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBannerIndex((prevIndex) => (prevIndex + 1) % bannerImages.length);
     }, bannerDelay);
@@ -336,52 +333,53 @@ const LottoGenerator = () => {
     return result;
   };
 
-  const fetchWinningNumbers = async () => {
-    try {
-      const res = await fetch("/api/proxyWinningNumbers"); // ✅ 서버 프록시 API 호출
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`API 오류: ${res.status} - ${errorText}`);
-      }
-  
-      const data = await res.json();
-  
-      if (data.error) {
-        console.error("API 오류 발생:", data.error);
-        return;
-      }
-  
-      console.log("✅ 최신 당첨번호:", data);
-  
-      // ✅ 1등 당첨번호 상태 업데이트
-      setLatestWinningNumbers({
-        round: data.round,
-        date: data.date,
-        numbers: data.numbers, // ✅ 당첨 번호 배열
-        bonus: data.bonus, // ✅ 보너스 번호
-        totalPrize: data.totalPrize,
-        firstWinnerCount: data.firstWinnerCount,
-        firstWinAmount: data.firstWinAmount,
-      });
-
-      // 📌 회차별 당첨번호 저장
-      setWinningMap(prev => ({
-        ...prev,
-        [data.round]: {
-          numbers: data.numbers,
-          bonus: data.bonus
+  const fetchWinningNumbers = useCallback(() => {
+    const debouncedFetch = debounce(async () => {
+      try {
+        const res = await fetch("/api/proxyWinningNumbers");
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`API 오류: ${res.status} - ${errorText}`);
         }
-      }));
   
-    } catch (error) {
-      console.error("1등 당첨번호 조회 오류:", error);
-    }
-  };
+        const data = await res.json();
+        if (data.error) return console.error("API 오류 발생:", data.error);
+  
+        console.log("✅ 최신 당첨번호:", data);
+  
+        setLatestWinningNumbers({
+          round: data.round,
+          date: data.date,
+          numbers: data.numbers,
+          bonus: data.bonus,
+          totalPrize: data.totalPrize,
+          firstWinnerCount: data.firstWinnerCount,
+          firstWinAmount: data.firstWinAmount,
+        });
+  
+        setWinningMap((prev) => ({
+          ...prev,
+          [data.round]: {
+            numbers: data.numbers,
+            bonus: data.bonus,
+          },
+        }));
+      } catch (error) {
+        console.error("🔥 1등 당첨번호 조회 실패:", error);
+      }
+    }, 1000);
+  
+    debouncedFetch();
+  }, []);
+  
   
   // ✅ useEffect를 통해 최신 회차 1등 당첨번호 가져오기
   useEffect(() => {
     fetchWinningNumbers();
-  }, []);
+    return () => {
+      fetchWinningNumbers.cancel?.(); // lodash.debounce 제공 기능
+    };
+  }, [fetchWinningNumbers]);
   
   useEffect(() => {
     if (!latestWinningNumbers?.round || !generatedHistory?.length) return;
@@ -456,13 +454,7 @@ const LottoGenerator = () => {
   
       // ✅ 핵심: 서버에서 복호화 + 마스킹된 유저 포함 데이터 다시 불러오기      
     }, 5000);
-  };
-   
-  
-  // ✅ 기존: fetchWinningNumbers() 실행용 useEffect
-  useEffect(() => {
-    fetchWinningNumbers();
-  }, []);
+  };   
 
   // ✅ 기존: currentRound 계산용 useEffect
   useEffect(() => {
