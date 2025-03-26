@@ -11,19 +11,6 @@ import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추�
 import { formatDate } from "@/utils/date";  
 import debounce from "lodash.debounce";
 
-const [additionalPage, setAdditionalPage] = useState(1);
-const maxAdditions = 5;
-
-const additionalHistory = useMemo(() => {
-  return [...generatedHistory]
-    .filter(entry => entry.type === "추가")
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, maxAdditions);
-}, [generatedHistory]);
-
-const totalAdditionalPages = additionalHistory.length;
-const currentAdditionalEntry = additionalHistory[additionalPage - 1];
-
 type LottoEntry = {
   round: number;
   date: string;
@@ -100,6 +87,7 @@ type WinningNumbersType = {
 
 const LottoGenerator = () => {
   const [name, setName] = useState<string>("");
+  const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
   const [birthdate, setBirthdate] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
   const [birthMonth, setBirthMonth] = useState<string>("");
@@ -158,8 +146,7 @@ const LottoGenerator = () => {
   const [roundStatsPage, setRoundStatsPage] = useState<number>(1);
   const [generationCounter, setGenerationCounter] = useState<number>(1);
   const [generationId, setGenerationId] = useState<string>("");
-  const [generationTime, setGenerationTime] = useState<string>("");
-  const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
+  const [generationTime, setGenerationTime] = useState<string>("");  
   const [generationNumber, setGenerationNumber] = useState<number | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(16);
   const bannerImages = [
@@ -176,6 +163,19 @@ const LottoGenerator = () => {
       // 추가 배너들...
     ];
   const bannerDelay = 3000; // 슬라이드 전환 시간(ms)
+
+  const [additionalPage, setAdditionalPage] = useState(1);
+  const maxAdditions = 5;
+  
+  const additionalHistory = useMemo(() => {
+    return [...generatedHistory]
+      .filter(entry => entry.type === "추가")
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, maxAdditions);
+  }, [generatedHistory]);
+
+  const totalAdditionalPages = additionalHistory.length;
+  const currentAdditionalEntry = additionalHistory[additionalPage - 1];
 
   useEffect(() => {
     const handleResize = () => {
