@@ -200,7 +200,7 @@ const LottoGenerator = () => {
 
   const totalAdditionalPages = todayAdditions.length;
   const currentAdditionalEntry = todayAdditions[additionalPage - 1];
-  
+
   useEffect(() => {
     fetchTodayAdditionsByUser(currentUser).then(setTodayAdditions);
   }, []);
@@ -245,7 +245,7 @@ const LottoGenerator = () => {
     setCurrentRound(calculateLottoRound()); // ✅ 현재 회차 계산
   }, []);
 
-  const currentUser = "guest";
+  const currentUser = encryptData(name); 
 
   useEffect(() => {  
     fetchLottoHistory();
@@ -425,6 +425,13 @@ const LottoGenerator = () => {
       debouncedFetch.cancel();
     };
   }, []);  
+
+  useEffect(() => {
+    if (!name) return; // 🔐 이름 없으면 쿼리 실행 X
+  
+    const userId = encryptData(name); // 저장과 동일하게 암호화된 ID
+    fetchTodayAdditionsByUser(userId).then(setTodayAdditions);
+  }, [name]);
   
   useEffect(() => {
     if (!latestWinningNumbers?.round || !generatedHistory?.length) return;
