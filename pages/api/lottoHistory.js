@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         ...data,
         id: snap.id,
-        user: "guest",
+        user: "by guest",
         createdAt: data.createdAt?.toDate?.() ?? data.createdAt ?? "",
       });
     }
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       return {
         ...data,
         id: doc.id,
-        user: "guest",
+        user: "by guest",
         createdAt: data.createdAt?.toDate?.() ?? data.createdAt ?? "",
       };
     });
