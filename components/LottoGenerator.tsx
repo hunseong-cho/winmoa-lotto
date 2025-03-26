@@ -601,8 +601,6 @@ const LottoGenerator = () => {
       setBirthMonth(""); // ✅ 월(MM) 초기화
       setBirthDay(""); // ✅ 일(DD) 초기화
       setLuckyNumbers([]);
-      setGeneratedNumbers([]);
-      setAdditionalNumbers([]); // ✅ 추가 생성된 번호도 초기화
       setLuckyStoreDirection("");
       setFortuneScore(null);
       setFortuneDetails({ star: 0, saju: 0 });
