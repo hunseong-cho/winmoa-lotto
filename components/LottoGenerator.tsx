@@ -17,21 +17,7 @@ type LottoEntry = {
   numbers: number[];
   user: string;
   id: string;
-  type?: "기본" | "추가"; // ✅ 여기를 추가!
   createdAt?: Date | string | { seconds: number };
-};
-
-const isToday = (val: any): boolean => {
-  const date = typeof val === "object" && "seconds" in val
-    ? new Date(val.seconds * 1000)
-    : new Date(val);
-
-  const today = new Date();
-  return (
-    date.getFullYear() === today.getFullYear() &&
-    date.getMonth() === today.getMonth() &&
-    date.getDate() === today.getDate()
-  );
 };
 
 const handleSave = () => {
@@ -100,9 +86,6 @@ type WinningNumbersType = {
 
 
 const LottoGenerator = () => {
-  const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
-  const [filteredAdditionalHistory, setFilteredAdditionalHistory] = useState<LottoEntry[]>([]);
-  const [additionalPage, setAdditionalPage] = useState<number>(1);  
   const [name, setName] = useState<string>("");
   const [birthdate, setBirthdate] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
@@ -162,7 +145,8 @@ const LottoGenerator = () => {
   const [roundStatsPage, setRoundStatsPage] = useState<number>(1);
   const [generationCounter, setGenerationCounter] = useState<number>(1);
   const [generationId, setGenerationId] = useState<string>("");
-  const [generationTime, setGenerationTime] = useState<string>("");  
+  const [generationTime, setGenerationTime] = useState<string>("");
+  const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
   const [generationNumber, setGenerationNumber] = useState<number | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(16);
   const bannerImages = [
@@ -179,8 +163,6 @@ const LottoGenerator = () => {
       // 추가 배너들...
     ];
   const bannerDelay = 3000; // 슬라이드 전환 시간(ms)
-  const currentAdditional = filteredAdditionalHistory[additionalPage - 1];
-  const totalAdditionalPages = filteredAdditionalHistory.length;
 
   useEffect(() => {
     const handleResize = () => {
@@ -230,36 +212,6 @@ const LottoGenerator = () => {
       generateLottoNumbers();
     }
   }, [infoGenerated, luckyNumbers]); // 🎯 `infoGenerated` 또는 `luckyNumbers` 변경 시 실행
-
-  useEffect(() => {
-    if (!name) {
-      setFilteredAdditionalHistory([]);
-      return;
-    }
-  
-    const encryptedUser = encryptData(name);
-    const todayFiltered = generatedHistory
-      .filter(
-        (entry) =>
-          entry.type === "추가" &&
-          entry.user === encryptedUser &&
-          isToday(entry.createdAt || entry.date)
-      )
-      .sort((a, b) => {
-        const getTime = (val: any): number => {
-          if (!val) return 0;
-          if (typeof val === "object" && "seconds" in val) {
-            return new Date(val.seconds * 1000).getTime();
-          }
-          return new Date(val).getTime();
-        };
-        return getTime(b.createdAt || b.date) - getTime(a.createdAt || a.date);
-      })
-      .slice(0, 5);
-  
-    setFilteredAdditionalHistory(todayFiltered);
-    setAdditionalPage(1); // 페이지 초기화
-  }, [generatedHistory, name]);  
 
   const checkWinningRank = (
     userNumbers: number[],
@@ -520,8 +472,16 @@ const LottoGenerator = () => {
     setTotalStats(total);
     setRoundStats(perRound);
   
-  }, [winningMap, latestWinningNumbers, generatedHistory]);  
-
+  }, [winningMap, latestWinningNumbers, generatedHistory]);
+  
+  const getBallColor = (num: number): string => {
+    if (num <= 10) return "bg-yellow-400";
+    if (num <= 20) return "bg-blue-500";
+    if (num <= 30) return "bg-red-500";
+    if (num <= 40) return "bg-gray-500";
+    return "bg-green-500";
+  };
+  
   const generateFortuneAndNumbers = async (): Promise<void> => {
     if (!name || !birthdate) return;
   
@@ -816,23 +776,23 @@ const LottoGenerator = () => {
 
 
       {/* ✅ 추가 생성된 번호 (초기화 기능 포함) */}
-      {currentAdditional && (
-        <div className="mt-6 w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
+      {additionalNumbers.length > 0 && (
+        <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
           <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
             🎉 추가 생성 완료!{" "}
             <span className="text-blue-600 font-bold">
-              ({`No-${currentAdditional.id?.toString().padStart(9, "0")}`})
+              ({`No-${generationNumber?.toString().padStart(9, "0")}`})
             </span>
           </div>
 
           <div className="flex justify-center items-center gap-2 mb-2">
-            <span className="font-bold text-sm text-gray-800">{currentAdditional.round}회</span>
-            {currentAdditional.numbers.map((num, index) => (
+            <span className="font-bold text-sm text-gray-800">{currentRound}회</span>
+            {additionalNumbers.map((num, index) => (
               <motion.span
-                key={`recent-add-${index}`}
+                key={`add-ball-${index}`}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: index * 0.2 }}
+                transition={{ delay: index * 0.5 }}
                 className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full text-center flex items-center justify-center font-bold`}
               >
                 {num}
@@ -841,28 +801,7 @@ const LottoGenerator = () => {
           </div>
 
           <div className="text-center text-xs text-gray-500">
-            by {currentAdditional.user} 🕒 {formatDate(currentAdditional.createdAt || currentAdditional.date)}
-          </div>
-
-          {/* 페이지네이션 버튼 */}
-          <div className="flex justify-center gap-4 mt-4">
-            <button
-              onClick={() => setAdditionalPage((prev) => Math.max(prev - 1, 1))}
-              disabled={additionalPage === 1}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
-            >
-              ◀ 이전
-            </button>
-            <span className="text-sm font-medium text-gray-600">
-              {additionalPage} / {totalAdditionalPages}
-            </span>
-            <button
-              onClick={() => setAdditionalPage((prev) => Math.min(prev + 1, totalAdditionalPages))}
-              disabled={additionalPage === totalAdditionalPages}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
-            >
-              다음 ▶
-            </button>
+            by <span className="font-semibold">by guest</span> 🕒 {generationTime}
           </div>
         </div>
       )}
