@@ -11,6 +11,7 @@ import { generateSecureKey } from "../utils/encryption"; // 상대경로로 고�
 import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추가
 import { formatDate } from "@/utils/date";  
 import debounce from "lodash.debounce";
+import { serverTimestamp } from "firebase/firestore"
 
 const getTodayMidnight = () => {
   const date = new Date();
@@ -487,6 +488,7 @@ const LottoGenerator = () => {
         numbers: finalNumbers,
         user: encryptData(name),
         type: "추가" as const, // ✅ 추가
+        createdAt: serverTimestamp(),
       };
   
       const newId = await saveLottoData(newHistory);
