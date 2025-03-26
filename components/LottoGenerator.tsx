@@ -17,6 +17,7 @@ type LottoEntry = {
   numbers: number[];
   user: string;
   id: string;
+  type?: "기본" | "추가";
   createdAt?: Date | string | { seconds: number };
 };
 
@@ -166,10 +167,9 @@ const LottoGenerator = () => {
 
   const [additionalPage, setAdditionalPage] = useState(1);
   const maxAdditions = 5;
-  
+
   const additionalHistory = useMemo(() => {
-    return [...generatedHistory]
-      .filter(entry => entry.type === "추가")
+    return [...generatedHistory]      
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, maxAdditions);
   }, [generatedHistory]);
