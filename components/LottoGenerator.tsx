@@ -87,6 +87,7 @@ type WinningNumbersType = {
 
 
 const LottoGenerator = () => {
+  const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
   const [additionalPage, setAdditionalPage] = useState<number>(1);
   const filteredAdditionalHistory = useMemo(() => {
     return generatedHistory
@@ -162,8 +163,7 @@ const LottoGenerator = () => {
   const [roundStatsPage, setRoundStatsPage] = useState<number>(1);
   const [generationCounter, setGenerationCounter] = useState<number>(1);
   const [generationId, setGenerationId] = useState<string>("");
-  const [generationTime, setGenerationTime] = useState<string>("");
-  const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
+  const [generationTime, setGenerationTime] = useState<string>("");  
   const [generationNumber, setGenerationNumber] = useState<number | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(16);
   const bannerImages = [
