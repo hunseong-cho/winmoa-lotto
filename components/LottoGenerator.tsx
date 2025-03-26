@@ -11,6 +11,19 @@ import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추�
 import { formatDate } from "@/utils/date";  
 import debounce from "lodash.debounce";
 
+const [additionalPage, setAdditionalPage] = useState(1);
+const maxAdditions = 5;
+
+const additionalHistory = useMemo(() => {
+  return [...generatedHistory]
+    .filter(entry => entry.type === "추가")
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, maxAdditions);
+}, [generatedHistory]);
+
+const totalAdditionalPages = additionalHistory.length;
+const currentAdditionalEntry = additionalHistory[additionalPage - 1];
+
 type LottoEntry = {
   round: number;
   date: string;
@@ -776,23 +789,25 @@ const LottoGenerator = () => {
 
 
       {/* ✅ 추가 생성된 번호 (초기화 기능 포함) */}
-      {additionalNumbers.length > 0 && (
-        <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
+      {currentAdditionalEntry && (
+        <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md mt-6">
           <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
             🎉 추가 생성 완료!{" "}
             <span className="text-blue-600 font-bold">
-              ({`No-${generationNumber?.toString().padStart(9, "0")}`})
+              ({`No-${currentAdditionalEntry.id?.toString().padStart(9, "0")}`})
             </span>
           </div>
 
           <div className="flex justify-center items-center gap-2 mb-2">
-            <span className="font-bold text-sm text-gray-800">{currentRound}회</span>
-            {additionalNumbers.map((num, index) => (
+            <span className="font-bold text-sm text-gray-800">
+              {currentAdditionalEntry.round}회
+            </span>
+            {currentAdditionalEntry.numbers.map((num, index) => (
               <motion.span
-                key={`add-ball-${index}`}
+                key={`add-${num}-${index}`}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: index * 0.5 }}
+                transition={{ delay: index * 0.1 }}
                 className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full text-center flex items-center justify-center font-bold`}
               >
                 {num}
@@ -801,8 +816,32 @@ const LottoGenerator = () => {
           </div>
 
           <div className="text-center text-xs text-gray-500">
-            by <span className="font-semibold">by guest</span> 🕒 {generationTime}
+            by <span className="font-semibold">guest</span> 🕒 {currentAdditionalEntry.date}
           </div>
+        </div>
+      )}
+
+      {totalAdditionalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-4">
+          <button
+            onClick={() => setAdditionalPage((prev) => Math.max(prev - 1, 1))}
+            disabled={additionalPage === 1}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+          >
+            ◀ 이전
+          </button>
+
+          <span className="text-gray-700 font-semibold">
+            {additionalPage} / {totalAdditionalPages}
+          </span>
+
+          <button
+            onClick={() => setAdditionalPage((prev) => Math.min(prev + 1, totalAdditionalPages))}
+            disabled={additionalPage === totalAdditionalPages}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+          >
+            다음 ▶
+          </button>
         </div>
       )}
 
