@@ -88,9 +88,10 @@ type WinningNumbersType = {
 
 const LottoGenerator = () => {
   const [name, setName] = useState<string>("");
-  const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
-  const [birthdate, setBirthdate] = useState<string>("");
-  const [birthYear, setBirthYear] = useState<string>("");
+  const [birthdate, setBirthdate] = useState<string>("");  
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const userKey = useMemo(() => generateSecureKey(name, birthdate, today), [name, birthdate, today]);  
+  const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);      
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthDay, setBirthDay] = useState<string>("");
   const [luckyNumbers, setLuckyNumbers] = useState<number[]>([]);
@@ -170,10 +171,10 @@ const LottoGenerator = () => {
 
   const additionalHistory = useMemo(() => {
     return [...generatedHistory]
-      .filter((entry) => entry.type === "추가") // ✅ 추가된 항목만 필터링
+      .filter((entry) => entry.userKey === userKey && entry.type === "추가")
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, maxAdditions);
-  }, [generatedHistory]);
+  }, [generatedHistory, userKey]);
 
   const totalAdditionalPages = additionalHistory.length;
   const currentAdditionalEntry = additionalHistory[additionalPage - 1];
@@ -448,6 +449,7 @@ const LottoGenerator = () => {
         date: now,
         numbers: finalNumbers,
         user: encryptData(name),
+        userKey,
         type: "추가" as const, // ✅ 추가
       };
   
@@ -497,10 +499,8 @@ const LottoGenerator = () => {
   };
   
   const generateFortuneAndNumbers = async (): Promise<void> => {
-    if (!name || !birthdate) return;
-  
-    const today = new Date().toISOString().split("T")[0];
-    const userKey = generateSecureKey(name, birthdate, today);
+    if (!name || !birthdate) return;  
+
     const userDocRef = doc(db, "fortuneData", userKey);
   
     try {
@@ -574,6 +574,7 @@ const LottoGenerator = () => {
       date: now,
       numbers: finalNumbers,
       user: encryptData(name),
+      userKey,
       type: "기본" as const, // ✅ 추가
     };
   

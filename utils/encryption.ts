@@ -1,7 +1,14 @@
 // utils/encryption.ts
 import CryptoJS from "crypto-js";
+import { createHash } from "crypto";
 
 const AES_SECRET = process.env.NEXT_PUBLIC_ENCRYPT_KEY || "default-secret-key";
+
+// ✅ 유저 고유 키 생성
+export function generateUserKey(name: string, birth: string, date: string): string {
+  const raw = `${name}-${birth}-${date}`;
+  return createHash("sha256").update(raw).digest("hex").slice(0, 32); // 32자 고정
+}
 
 /** 📌 AES 암호화 (내부 저장용) */
 export const encryptData = (text: string): string => {
