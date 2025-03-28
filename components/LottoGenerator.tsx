@@ -88,14 +88,14 @@ type WinningNumbersType = {
 
 
 const LottoGenerator = () => {
-  const [name, setName] = useState<string>("");
-  const [birthdate, setBirthdate] = useState<string>("");  
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
-  const userKey = useMemo(() => generateSecureKey(name, birthdate, today), [name, birthdate, today]);  
+  const [name, setName] = useState<string>("");
+  const [birthdate, setBirthdate] = useState<string>("");       
   const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);      
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthDay, setBirthDay] = useState<string>("");
   const [luckyNumbers, setLuckyNumbers] = useState<number[]>([]);
+  const userKey = useMemo(() => generateSecureKey(name, birthdate, today), [name, birthdate, today]); 
   const fetchLottoHistory = async () => {
     try {
       const res = await fetch("/api/lottoHistory");
