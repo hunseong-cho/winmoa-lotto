@@ -209,8 +209,8 @@ const LottoGenerator = () => {
 
   useEffect(() => {
     if (!name) return;
-    const encryptedUser = encryptData(name);
-    fetchTodayAdditionsByUser(encryptedUser).then(setTodayAdditions);
+    const userId = hashUserId(name);
+    fetchTodayAdditionsByUser(userId).then(setTodayAdditions);
   }, [name]);
 
   useEffect(() => {
