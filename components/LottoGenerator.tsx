@@ -109,9 +109,9 @@ type WinningNumbersType = {
   firstWinAmount?: number;
 };
 
-
 const LottoGenerator = () => {
   const [name, setName] = useState<string>("");
+  const currentUser = encryptData(name); 
   const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
   const [birthdate, setBirthdate] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
@@ -250,8 +250,6 @@ const LottoGenerator = () => {
   useEffect(() => {
     setCurrentRound(calculateLottoRound()); // ✅ 현재 회차 계산
   }, []);
-
-  const currentUser = encryptData(name); 
 
   useEffect(() => {  
     fetchLottoHistory();
