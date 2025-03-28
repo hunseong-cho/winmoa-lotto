@@ -586,13 +586,12 @@ const LottoGenerator = () => {
   
     setGeneratedNumbers(finalNumbers);    
     setGenerationId(newId);
-    setGenerationTime(now);
-
-    setDefaultGeneratedEntry(newHistory);
+    setGenerationTime(now);   
 
     await fetchLottoHistory();
   
     const fullHistory = { ...newHistory, id: newId };
+    setDefaultGeneratedEntry(fullHistory)
   
     // ✅ 서버 저장
     fetch("/api/lottoHistory", {
