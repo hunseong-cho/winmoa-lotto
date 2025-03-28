@@ -447,7 +447,6 @@ const LottoGenerator = () => {
     setRoundStats(perRound);
   }, [latestWinningNumbers, winningMap, generatedHistory]);  
 
-  // 변경된 코드 예시
   const generateAdditionalNumbers = async (): Promise<void> => {
     if (isCounting) return;
     setIsCounting(true);
@@ -470,6 +469,7 @@ const LottoGenerator = () => {
       while (numbers.size < 6) {
         numbers.add(Math.floor(Math.random() * 45) + 1);
       }
+  
       let finalNumbers = [...numbers].sort((a, b) => a - b);
   
       const now = new Date().toLocaleString("ko-KR", {
@@ -482,35 +482,42 @@ const LottoGenerator = () => {
         hour12: false,
       }).replace(/\./g, ".").replace(/\. /g, ".");
   
+      const encryptedUser = encryptData(name);
+  
       const newHistory = {
         round: currentRound,
         date: now,
         numbers: finalNumbers,
-        user: encryptData(name),
-        type: "추가" as const, // ✅ 추가
+        user: encryptedUser,
+        type: "추가" as const,
         createdAt: serverTimestamp(),
       };
   
       const newId = await saveLottoData(newHistory);
       if (!newId) return;
   
-      // ✅ 추가 번호 로컬 상태 업데이트
+      // 상태 반영
       setAdditionalNumbers(finalNumbers);
       setGenerationTime(now);
       setGenerationId(newId);
-
+  
       await fetchLottoHistory();
   
-      // ✅ 서버 백업 저장
+      // 서버 백업 저장
       fetch("/api/lottoHistory", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...newHistory, id: newId }),
       }).catch((err) => console.error("추가 기록 저장 실패:", err));
   
-      // ✅ 핵심: 서버에서 복호화 + 마스킹된 유저 포함 데이터 다시 불러오기      
+      // ✅ 핵심: 오늘 생성한 추가 번호 이력 새로 받아옴!
+      const newAdditions = await fetchTodayAdditionsByUser(encryptedUser);
+      setTodayAdditions(newAdditions);
+      console.log("🟢 추가 번호 갱신 완료:", newAdditions);
+  
     }, 5000);
-  };   
+  };
+     
 
   // ✅ 기존: currentRound 계산용 useEffect
   useEffect(() => {
@@ -830,7 +837,7 @@ const LottoGenerator = () => {
 
 
       {/* ✅ 추가 생성된 번호 (초기화 기능 포함) */}
-      {todayAdditions.length > 0 && currentAdditionalEntry && (
+      {Array.isArray(todayAdditions) && todayAdditions.length > 0 && currentAdditionalEntry && (
         <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md mt-6">
           <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
             🎉 추가 생성 완료!{" "}
@@ -861,6 +868,7 @@ const LottoGenerator = () => {
           </div>
         </div>
       )}
+
 
       {totalAdditionalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-4">
