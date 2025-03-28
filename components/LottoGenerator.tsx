@@ -88,6 +88,7 @@ type WinningNumbersType = {
 
 
 const LottoGenerator = () => {
+  const [defaultGeneratedEntry, setDefaultGeneratedEntry] = useState<LottoEntry | null>(null);
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [name, setName] = useState<string>("");
   const [birthdate, setBirthdate] = useState<string>("");       
@@ -583,9 +584,11 @@ const LottoGenerator = () => {
     const newId = await saveLottoData(newHistory);
     if (!newId) return;
   
-    setGeneratedNumbers(finalNumbers);
+    setGeneratedNumbers(finalNumbers);    
     setGenerationId(newId);
     setGenerationTime(now);
+
+    setDefaultGeneratedEntry(newHistory);
 
     await fetchLottoHistory();
   
@@ -758,21 +761,24 @@ const LottoGenerator = () => {
           </div>
         </div>
       )}
-
-
-    {/* ✅ 로또 번호 출력 부분 추가 */}
-    {generatedNumbers.length > 0 && (
+    
+    {/* ✅ 로또 번호 출력 부분 */}
+    {defaultGeneratedEntry && (
       <div className="mt-10 w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
-        <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">      
-        번호 생성 완료!{" "}
-        <span className="text-blue-600 font-bold">
-          ({`No-${generationNumber?.toString().padStart(9, "0")}`})
-        </span>
-      </div>
+        {/* ✅ 상단 텍스트 */}
+        <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
+          번호 생성 완료!{" "}
+          <span className="text-blue-600 font-bold">
+            ({`No-${generationNumber?.toString().padStart(9, "0")}`})
+          </span>
+        </div>
 
+        {/* ✅ 번호 출력 */}
         <div className="flex justify-center items-center gap-2 mb-2">
-          <span className="font-bold text-sm text-gray-800">{currentRound}회</span>
-          {generatedNumbers.map((num, index) => (
+          <span className="font-bold text-sm text-gray-800">
+            {defaultGeneratedEntry.round}회
+          </span>
+          {defaultGeneratedEntry.numbers.map((num, index) => (
             <motion.span
               key={`gen-ball-${index}`}
               initial={{ scale: 0, opacity: 0 }}
@@ -785,8 +791,9 @@ const LottoGenerator = () => {
           ))}
         </div>
 
+        {/* ✅ 생성 시간 */}
         <div className="text-center text-xs text-gray-500">
-          by <span className="font-semibold">by guest</span> 🕒 {generationTime}
+          by <span className="font-semibold">guest</span> 🕒 {defaultGeneratedEntry.date}
         </div>
       </div>
     )}
