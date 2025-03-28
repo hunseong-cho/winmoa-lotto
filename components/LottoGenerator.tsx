@@ -109,7 +109,7 @@ type WinningNumbersType = {
   firstWinAmount?: number;
 };
 
-const LottoGenerator = () => {
+const LottoGenerator = () => {  
   const [name, setName] = useState<string>("");
   const currentUser = encryptData(name); 
   const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
@@ -198,6 +198,8 @@ const LottoGenerator = () => {
       // 추가 배너들...
     ];
   const bannerDelay = 3000; // 슬라이드 전환 시간(ms)  
+
+  const maxAdditions = 5;
 
   const additionalHistory = useMemo(() => {
     return [...generatedHistory]      
