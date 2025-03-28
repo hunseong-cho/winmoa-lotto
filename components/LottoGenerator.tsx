@@ -17,6 +17,7 @@ type LottoEntry = {
   numbers: number[];
   user: string;
   id: string;
+  userKey: string;
   type?: "기본" | "추가";
   createdAt?: Date | string | { seconds: number };
 };
