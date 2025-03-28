@@ -138,7 +138,6 @@ const LottoGenerator = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [currentRound, setCurrentRound] = useState<number>(0);
-  const [additionalNumbers, setAdditionalNumbers] = useState<number[]>([]);
   const [countdown, setCountdown] = useState<number>(0);
   const [isCounting, setIsCounting] = useState<boolean>(false);
   const [latestWinningNumbers, setLatestWinningNumbers] = useState<{
@@ -174,6 +173,16 @@ const LottoGenerator = () => {
   const [generationTime, setGenerationTime] = useState<string>("");  
   const [generationNumber, setGenerationNumber] = useState<number | null>(null);
   const [todayAdditions, setTodayAdditions] = useState<any[]>([]);  
+  const filteredTodayAdditions = useMemo(() => {
+    const prefix = currentUser.slice(0, 12); // 암호화 key prefix
+    return todayAdditions.filter(entry => entry.user.startsWith(prefix));
+  }, [todayAdditions, currentUser]);  
+  const [todayPage, setTodayPage] = useState(1);
+  const itemsPerTodayPage = 1;  
+  const pagedTodayAdditions = useMemo(() => {
+    const start = (todayPage - 1) * itemsPerTodayPage;
+    return filteredTodayAdditions.slice(start, start + itemsPerTodayPage);
+  }, [filteredTodayAdditions, todayPage]);
   const [itemsPerPage, setItemsPerPage] = useState<number>(16);
   const bannerImages = [
       {
@@ -190,17 +199,11 @@ const LottoGenerator = () => {
     ];
   const bannerDelay = 3000; // 슬라이드 전환 시간(ms)  
 
-  const [additionalPage, setAdditionalPage] = useState(1);
-  const maxAdditions = 5;
-
   const additionalHistory = useMemo(() => {
     return [...generatedHistory]      
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, maxAdditions);
-  }, [generatedHistory]);
-
-  const totalAdditionalPages = todayAdditions.length;
-  const currentAdditionalEntry = todayAdditions[additionalPage - 1];
+  }, [generatedHistory]);  
 
   useEffect(() => {
     if (!name) return;
@@ -805,23 +808,25 @@ const LottoGenerator = () => {
 
 
     {/* ✅ 로또 번호 출력 부분 추가 */}
-    {generatedNumbers.length > 0 && (
+    {pagedTodayAdditions.length > 0 && (
       <div className="mt-10 w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md">
         <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">      
-        번호 생성 완료!{" "}
-        <span className="text-blue-600 font-bold">
-          ({`No-${generationNumber?.toString().padStart(9, "0")}`})
-        </span>
-      </div>
+          번호 생성 완료!{" "}
+          <span className="text-blue-600 font-bold">
+            ({pagedTodayAdditions[0].id})
+          </span>
+        </div>
 
         <div className="flex justify-center items-center gap-2 mb-2">
-          <span className="font-bold text-sm text-gray-800">{currentRound}회</span>
-          {generatedNumbers.map((num, index) => (
+          <span className="font-bold text-sm text-gray-800">
+            {pagedTodayAdditions[0].round}회
+          </span>
+          {pagedTodayAdditions[0].numbers.map((num: number, index: number) => (
             <motion.span
-              key={`gen-ball-${index}`}
+              key={`today-${num}-${index}`}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: index * 0.5 }}
+              transition={{ delay: index * 0.1 }}
               className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full text-center flex items-center justify-center font-bold`}
             >
               {num}
@@ -830,69 +835,38 @@ const LottoGenerator = () => {
         </div>
 
         <div className="text-center text-xs text-gray-500">
-          by <span className="font-semibold">by guest</span> 🕒 {generationTime}
+          by <span className="font-semibold">guest</span> 🕒 {pagedTodayAdditions[0].date}
         </div>
+
+        {/* 페이지네이션 */}
+        {filteredTodayAdditions.length > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-4">
+            <button
+              onClick={() => setTodayPage((prev) => Math.max(prev - 1, 1))}
+              disabled={todayPage === 1}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+            >
+              ◀ 이전
+            </button>
+
+            <span className="text-gray-700 font-semibold">
+              {todayPage} / {Math.ceil(filteredTodayAdditions.length / itemsPerTodayPage)}
+            </span>
+
+            <button
+              onClick={() => setTodayPage((prev) =>
+                Math.min(prev + 1, Math.ceil(filteredTodayAdditions.length / itemsPerTodayPage))
+              )}
+              disabled={todayPage === Math.ceil(filteredTodayAdditions.length / itemsPerTodayPage)}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+            >
+              다음 ▶
+            </button>
+          </div>
+        )}
       </div>
     )}
-
-
-      {/* ✅ 추가 생성된 번호 (초기화 기능 포함) */}
-      {Array.isArray(todayAdditions) && todayAdditions.length > 0 && currentAdditionalEntry && (
-        <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md mt-6">
-          <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
-            🎉 추가 생성 완료!{" "}
-            <span className="text-blue-600 font-bold">
-              ({`No-${currentAdditionalEntry.id?.toString().padStart(9, "0")}`})
-            </span>
-          </div>
-
-          <div className="flex justify-center items-center gap-2 mb-2">
-            <span className="font-bold text-sm text-gray-800">
-              {currentAdditionalEntry.round}회
-            </span>
-            {currentAdditionalEntry.numbers.map((num: number, index: number) => (
-              <motion.span
-                key={`add-${num}-${index}`}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full text-center flex items-center justify-center font-bold`}
-              >
-                {num}
-              </motion.span>
-            ))}
-          </div>
-
-          <div className="text-center text-xs text-gray-500">
-            by <span className="font-semibold">guest</span> 🕒 {currentAdditionalEntry.date}
-          </div>
-        </div>
-      )}
-
-
-      {totalAdditionalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-4">
-          <button
-            onClick={() => setAdditionalPage((prev) => Math.max(prev - 1, 1))}
-            disabled={additionalPage === 1}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
-          >
-            ◀ 이전
-          </button>
-
-          <span className="text-gray-700 font-semibold">
-            {additionalPage} / {totalAdditionalPages}
-          </span>
-
-          <button
-            onClick={() => setAdditionalPage((prev) => Math.min(prev + 1, totalAdditionalPages))}
-            disabled={additionalPage === totalAdditionalPages}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
-          >
-            다음 ▶
-          </button>
-        </div>
-      )}
+    
 
       <Button 
         onClick={handleButtonClick} 
