@@ -12,6 +12,7 @@ import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추�
 import { formatDate } from "@/utils/date";  
 import debounce from "lodash.debounce";
 import { serverTimestamp } from "firebase/firestore"
+import { hashUserId } from "../utils/hash";
 
 const getTodayMidnight = () => {
   const date = new Date();
@@ -111,7 +112,7 @@ type WinningNumbersType = {
 
 const LottoGenerator = () => {  
   const [name, setName] = useState<string>("");
-  const currentUser = encryptData(name); 
+  const currentUser = hashUserId(name); 
   const [generatedHistory, setGeneratedHistory] = useState<LottoEntry[]>([]);
   const [birthdate, setBirthdate] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
@@ -174,9 +175,8 @@ const LottoGenerator = () => {
   const [generationNumber, setGenerationNumber] = useState<number | null>(null);
   const [todayAdditions, setTodayAdditions] = useState<any[]>([]);  
   const filteredTodayAdditions = useMemo(() => {
-    const prefix = currentUser.slice(0, 12); // 암호화 key prefix
-    return todayAdditions.filter(entry => entry.user.startsWith(prefix));
-  }, [todayAdditions, currentUser]);  
+    return todayAdditions.filter(entry => entry.user === currentUser);
+  }, [todayAdditions, currentUser]);;  
   const [todayPage, setTodayPage] = useState(1);
   const itemsPerTodayPage = 1;  
   const pagedTodayAdditions = useMemo(() => {
@@ -435,7 +435,7 @@ const LottoGenerator = () => {
   useEffect(() => {
     if (!name) return; // 🔐 이름 없으면 쿼리 실행 X
   
-    const userId = encryptData(name); // 저장과 동일하게 암호화된 ID
+    const userId = hashUserId(name); // 저장과 동일하게 암호화된 ID
     fetchTodayAdditionsByUser(userId).then(setTodayAdditions);
   }, [name]);
   
@@ -491,7 +491,7 @@ const LottoGenerator = () => {
         round: currentRound,
         date: now,
         numbers: finalNumbers,
-        user: encryptedUser,
+        user: hashUserId(name),
         type: "추가" as const,
         createdAt: serverTimestamp(),
       };
@@ -622,7 +622,7 @@ const LottoGenerator = () => {
       round: currentRound,
       date: now,
       numbers: finalNumbers,
-      user: encryptData(name),
+      user: hashUserId(name),
       type: "기본" as const, // ✅ 추가
     };
   
