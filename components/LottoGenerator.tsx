@@ -169,7 +169,8 @@ const LottoGenerator = () => {
   const maxAdditions = 5;
 
   const additionalHistory = useMemo(() => {
-    return [...generatedHistory]      
+    return [...generatedHistory]
+      .filter((entry) => entry.type === "추가") // ✅ 추가된 항목만 필터링
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, maxAdditions);
   }, [generatedHistory]);
@@ -789,7 +790,7 @@ const LottoGenerator = () => {
 
 
       {/* ✅ 추가 생성된 번호 (초기화 기능 포함) */}
-      {infoGenerated && currentAdditionalEntry && (
+      {infoGenerated && currentAdditionalEntry && currentAdditionalEntry.type === "추가" && (
         <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md mt-6">
           <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
             🎉 추가 생성 완료!{" "}
