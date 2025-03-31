@@ -98,10 +98,15 @@ const LottoGenerator = () => {
   const [birthYear, setBirthYear] = useState<string>("");
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthDay, setBirthDay] = useState<string>("");
-  const userKey = useMemo(() => {
-    const localId = getOrCreateUserId();
-    return generateSecureKey(name, birthdate, localId + today); // ✅ 3개 인자 전달
+  const [userKey, setUserKey] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return; // ✅ SSR 방지용
+    const localId = getOrCreateUserId();        // UUID from localStorage
+    const key = generateSecureKey(name, birthdate, localId + today); // 세 번째 인자에 salt 포함
+    setUserKey(key);                            // 안전하게 상태에 저장
   }, [name, birthdate, today]);
+  
   const fetchLottoHistory = async () => {
     try {
       const res = await fetch("/api/lottoHistory");
