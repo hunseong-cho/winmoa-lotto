@@ -1,0 +1,13 @@
+# 모든 검색 엔진에 접근 허용
+User-agent: *
+Allow: /
+
+# 크롤링 예외처리 필요한 경우 (예: /api/ 등)
+Disallow: /api/
+Disallow: /admin/
+
+# 명시적 선언
+Host: https://lotto.winmoa.net
+
+# 사이트맵 경로
+Sitemap: https://lotto.winmoa.net/sitemap.xml
