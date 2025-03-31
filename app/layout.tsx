@@ -41,10 +41,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="ko">
+      <head>
+        {/* ✅ 네이버 검색엔진 등록 메타 태그 */}
+        <meta name="naver-site-verification" content="0df24a29ea5ef80459c6fdbf3c77722c7788e4a0" />
+        {/* ✅ 추가 SEO 메타 태그 예시 */}
+        <meta name="robots" content="index, follow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
