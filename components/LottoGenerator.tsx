@@ -106,7 +106,7 @@ const LottoGenerator = () => {
     const key = generateSecureKey(name, birthdate, localId + today); // 세 번째 인자에 salt 포함
     setUserKey(key);                            // 안전하게 상태에 저장
   }, [name, birthdate, today]);
-  
+
   const fetchLottoHistory = async () => {
     try {
       const res = await fetch("/api/lottoHistory");
@@ -635,6 +635,7 @@ const LottoGenerator = () => {
     setTimeout(() => setButtonDisabled(false), 5000);
 
     if (infoGenerated) {
+      setDefaultGeneratedEntry(null);
       setName("");
       setBirthdate("");
       setBirthYear(""); // ✅ 연도(YYYY) 초기화
