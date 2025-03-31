@@ -180,6 +180,12 @@ const LottoGenerator = () => {
   const bannerDelay = 3000; // 슬라이드 전환 시간(ms)
 
   const [additionalPage, setAdditionalPage] = useState(1);
+  const [animateAddition, setAnimateAddition] = useState<boolean>(false); // ✅ 상태 추가
+
+  useEffect(() => {
+    setAnimateAddition(false); // 페이지 넘길 땐 모션 비활성화
+  }, [additionalPage]);
+
   const maxAdditions = 5;
 
   const additionalHistory = useMemo(() => {
@@ -498,6 +504,7 @@ const LottoGenerator = () => {
   
       // ✅ 핵심: 서버에서 복호화 + 마스킹된 유저 포함 데이터 다시 불러오기      
     }, 5000);
+    setAnimateAddition(true);
   };   
 
   // ✅ 기존: currentRound 계산용 useEffect
@@ -828,8 +835,8 @@ const LottoGenerator = () => {
           <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
             🎉 추가 생성 완료!{" "}
             {currentAdditionalEntry?.id && (
-              <span className="text-blue-600 font-bold">
-                {`No-${currentAdditionalEntry.id.toString().padStart(9, "0")}`}
+                <span className="text-blue-600 font-bold">
+                {`No-${String(currentAdditionalEntry.id).padStart(9, "0")}`}
               </span>
             )}
           </div>
@@ -841,9 +848,9 @@ const LottoGenerator = () => {
             {currentAdditionalEntry.numbers.map((num, index) => (
               <motion.span
                 key={`add-${num}-${index}`}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: index * 0.5 }}
+                initial={animateAddition ? { scale: 0, opacity: 0 } : false}
+                animate={animateAddition ? { scale: 1, opacity: 1 } : false}
+                transition={animateAddition ? { delay: index * 0.5 } : undefined}
                 className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full text-center flex items-center justify-center font-bold`}
               >
                 {num}
