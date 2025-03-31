@@ -62,11 +62,6 @@ const parseDate = (dateString: string): Date | null => {
   return isNaN(parsedDate.getTime()) ? null : parsedDate; // ✅ 유효한 날짜인지 확인 후 반환
 };
 
-const getLottoRound = (entry: { round?: number; date?: string }): number | string => {
-  if (!entry) return "회차 정보 없음"; // ✅ entry가 없는 경우 방어
-  return entry.round || calculateLottoRound(entry.date);
-};
-
 const calculateLottoRound = (dateString: string | null = null): number => {
   const firstLottoDate = new Date("2002-12-07");
   const targetDate = dateString ? parseDate(dateString) : new Date(); // ✅ 현재 날짜 또는 특정 날짜 사용
@@ -126,8 +121,7 @@ const LottoGenerator = () => {
   const [infoGenerated, setInfoGenerated] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
-  const [currentRound, setCurrentRound] = useState<number>(0);
-  const [additionalNumbers, setAdditionalNumbers] = useState<number[]>([]);
+  const [currentRound, setCurrentRound] = useState<number>(0);  
   const [countdown, setCountdown] = useState<number>(0);
   const [isCounting, setIsCounting] = useState<boolean>(false);
   const [latestWinningNumbers, setLatestWinningNumbers] = useState<{
@@ -157,8 +151,7 @@ const LottoGenerator = () => {
     { round: number; "1등": number; "2등": number; "3등": number; "4등": number; "5등": number }[]
   >([]);
   const [currentBannerIndex, setCurrentBannerIndex] = useState<number>(0);
-  const [roundStatsPage, setRoundStatsPage] = useState<number>(1);
-  const [generationCounter, setGenerationCounter] = useState<number>(1);
+  const [roundStatsPage, setRoundStatsPage] = useState<number>(1);  
   const [generationId, setGenerationId] = useState<string>("");
   const [generationTime, setGenerationTime] = useState<string>("");  
   const [generationNumber, setGenerationNumber] = useState<number | null>(null);
@@ -183,7 +176,13 @@ const LottoGenerator = () => {
   const [animateAddition, setAnimateAddition] = useState<boolean>(false); // ✅ 상태 추가
 
   useEffect(() => {
-    setAnimateAddition(false); // 페이지 넘길 땐 모션 비활성화
+    setAnimateAddition(false); // 🔁 모션 초기화
+  
+    const timer = setTimeout(() => {
+      setAnimateAddition(true); // ✅ 다시 트리거
+    }, 50); // 💡 50ms 정도면 충분
+  
+    return () => clearTimeout(timer); // 🧼 클린업
   }, [additionalPage]);
 
   const maxAdditions = 5;
@@ -488,8 +487,7 @@ const LottoGenerator = () => {
       const newId = await saveLottoData(newHistory);
       if (!newId) return;
   
-      // ✅ 추가 번호 로컬 상태 업데이트
-      setAdditionalNumbers(finalNumbers);
+      // ✅ 추가 번호 로컬 상태 업데이트      
       setGenerationTime(now);
       setGenerationId(newId);
 
@@ -628,10 +626,7 @@ const LottoGenerator = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(fullHistory),
-    }).catch((error) => console.error("로또 기록 저장 오류:", error));
-  
-    // ✅ 서버에서 복호화+마스킹된 이력 다시 불러오기
-    await fetchLottoHistory();
+    }).catch((error) => console.error("로또 기록 저장 오류:", error));        
   };  
 
   const getLottoRound = (entry: { round?: number; date?: string }) =>
@@ -903,17 +898,7 @@ const LottoGenerator = () => {
           {isCounting ? `추가 생성 대기 중 (${countdown}s)` : "추가 생성하기"}
         </Button>
 
-        {/* ✅ 5초 딜레이 동안 표시되는 안내 메시지 & 애니메이션 추가 */}
-        {isCounting && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="mt-2 text-red-500 text-lg font-bold"
-          >
-            
-          </motion.div>
-        )}        
+        {/* ✅ 5초 딜레이 동안 표시되는 안내 메시지 & 애니메이션 추가 */}        
         </>
       )}
         <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md mt-6">
