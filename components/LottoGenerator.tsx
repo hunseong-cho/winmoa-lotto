@@ -832,7 +832,7 @@ const LottoGenerator = () => {
             🎉 추가 생성 완료!{" "}
             {currentAdditionalEntry?.id && (
                 <span className="text-blue-600 font-bold">
-                {`No-${String(currentAdditionalEntry.id).padStart(9, "0")}`}
+                  {currentAdditionalEntry.id}
               </span>
             )}
           </div>
