@@ -35,23 +35,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
       <head>
-        {/* ✅ 네이버 검색엔진 등록 메타 태그 */}
-        <meta name="naver-site-verification" content="0df24a29ea5ef80459c6fdbf3c77722c7788e4a0" />
-        {/* ✅ 추가 SEO 메타 태그 예시 */}
-        <meta name="robots" content="index, follow" />
+        {/* ✅ Google 소유권 인증 메타 태그 */}
+        <meta
+          name="google-site-verification"
+          content="JC6KrKMi8q8b_GYOZJZJslR312WKJPKqumhfnS3saw8"
+        />
+        {/* ✅ Naver 소유권 인증 메타 태그 (예시) */}
+        <meta
+          name="naver-site-verification"
+          content="0df24a29ea5ef80459c6fdbf3c77722c7788e4a0"
+        />
+        {/* ✅ 기타 SEO 기본 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="utf-8" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
