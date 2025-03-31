@@ -846,15 +846,12 @@ const LottoGenerator = () => {
               {currentAdditionalEntry.round}회
             </span>
             {currentAdditionalEntry.numbers.map((num, index) => (
-              <motion.span
-                key={`add-${num}-${index}-${generationId}`} // ✅ 새로 생성된 ID를 키에 포함
-                initial={animateAddition ? { scale: 0, opacity: 0 } : false}
-                animate={animateAddition ? { scale: 1, opacity: 1 } : false}
-                transition={animateAddition ? { delay: index * 0.5 } : undefined}
+              <span
+                key={`add-${num}-${index}-${generationId}`}
                 className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full text-center flex items-center justify-center font-bold`}
               >
                 {num}
-              </motion.span>
+              </span>
             ))}
           </div>
 
