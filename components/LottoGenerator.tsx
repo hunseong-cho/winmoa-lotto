@@ -10,6 +10,7 @@ import { generateSecureKey } from "../utils/encryption"; // 상대경로로 고�
 import { encryptData } from "../utils/encryption"; // 🔐 암호화 유틸 추가
 import { formatDate } from "@/utils/date";  
 import debounce from "lodash.debounce";
+import { v4 as uuidv4 } from "uuid";
 
 type LottoEntry = {
   round: number;
@@ -97,7 +98,10 @@ const LottoGenerator = () => {
   const [birthYear, setBirthYear] = useState<string>("");
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthDay, setBirthDay] = useState<string>("");
-  const userKey = useMemo(() => generateSecureKey(name, birthdate, today), [name, birthdate, today]); 
+  const userKey = useMemo(() => {
+    const localId = getOrCreateUserId();
+    return generateSecureKey(name, birthdate + localId + today);
+  }, [name, birthdate, today]);
   const fetchLottoHistory = async () => {
     try {
       const res = await fetch("/api/lottoHistory");
@@ -181,6 +185,20 @@ const LottoGenerator = () => {
 
   const totalAdditionalPages = additionalHistory.length;
   const currentAdditionalEntry = additionalHistory[additionalPage - 1];
+
+  const getOrCreateUserId = (): string => {
+    try {
+      if (typeof window === "undefined") return "";
+      let userId = localStorage.getItem("lottoUserId");
+      if (!userId) {
+        userId = uuidv4();
+        localStorage.setItem("lottoUserId", userId);
+      }
+      return userId;
+    } catch {
+      return uuidv4(); // Fallback
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
