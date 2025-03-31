@@ -100,7 +100,7 @@ const LottoGenerator = () => {
   const [birthDay, setBirthDay] = useState<string>("");
   const userKey = useMemo(() => {
     const localId = getOrCreateUserId();
-    return generateSecureKey(name, birthdate + localId + today);
+    return generateSecureKey(name, birthdate, localId + today); // ✅ 3개 인자 전달
   }, [name, birthdate, today]);
   const fetchLottoHistory = async () => {
     try {
