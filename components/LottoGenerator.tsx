@@ -508,6 +508,12 @@ const LottoGenerator = () => {
     setAnimateAddition(true);
   };   
 
+  useEffect(() => {
+    if (infoGenerated) {
+      setAdditionalPage(1);
+    }
+  }, [generatedHistory]);
+
   // ✅ 기존: currentRound 계산용 useEffect
   useEffect(() => {
     setCurrentRound(calculateLottoRound());
