@@ -493,6 +493,8 @@ const LottoGenerator = () => {
       setGenerationId(newId);
 
       await fetchLottoHistory();
+
+      setAdditionalPage(1);
   
       // ✅ 서버 백업 저장
       fetch("/api/lottoHistory", {
