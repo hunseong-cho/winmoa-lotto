@@ -825,61 +825,62 @@ const LottoGenerator = () => {
 
 
       {/* ✅ 추가 생성된 번호 (초기화 기능 포함) */}
-      {infoGenerated && currentAdditionalEntry && currentAdditionalEntry.type === "추가" && (
-        <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md mt-6">
-          <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
-            🎉 추가 생성 완료!{" "}
-            {currentAdditionalEntry?.id && (
+      {infoGenerated && additionalHistory.length > 0 && (
+        <>
+          <div className="w-full max-w-full lg:max-w-[730px] bg-white/60 border border-gray-200 backdrop-blur-md rounded-lg p-4 shadow-md mt-6">
+            <div className="text-center text-base md:text-lg lg:text-xl font-semibold text-blue-700 border-b border-blue-200 pb-2 mb-4">
+              🎉 추가 생성 완료!{" "}
+              {additionalHistory[additionalPage - 1]?.id && (
                 <span className="text-blue-600 font-bold">
-                {`No-${String(currentAdditionalEntry.id).padStart(9, "0")}`}
+                  {`No-${String(additionalHistory[additionalPage - 1].id).padStart(9, "0")}`}
+                </span>
+              )}
+            </div>
+
+            <div className="flex justify-center items-center gap-2 mb-2">
+              <span className="font-bold text-sm text-gray-800">
+                {additionalHistory[additionalPage - 1].round}회
               </span>
-            )}
+              {additionalHistory[additionalPage - 1].numbers.map((num, index) => (
+                <span
+                  key={`add-${num}-${index}`}
+                  className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full text-center flex items-center justify-center font-bold`}
+                >
+                  {num}
+                </span>
+              ))}
+            </div>
+
+            <div className="text-center text-xs text-gray-500">
+              by <span className="font-semibold">guest</span> 🕒 {additionalHistory[additionalPage - 1].date}
+            </div>
           </div>
 
-          <div className="flex justify-center items-center gap-2 mb-2">
-            <span className="font-bold text-sm text-gray-800">
-              {currentAdditionalEntry.round}회
-            </span>
-            {currentAdditionalEntry.numbers.map((num, index) => (
-              <span
-                key={`add-${num}-${index}-${generationId}`}
-                className={`${ballSizeClass[ballSizeMode]} ${getBallColor(num)} text-white rounded-full text-center flex items-center justify-center font-bold`}
+          {/* 페이지 네비게이션 (공통) */}
+          {totalAdditionalPages > 1 && (
+            <div className="flex justify-center items-center gap-4 mt-4">
+              <button
+                onClick={() => setAdditionalPage((prev) => Math.max(prev - 1, 1))}
+                disabled={additionalPage === 1}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
               >
-                {num}
+                ◀ 이전
+              </button>
+              <span className="text-gray-700 font-semibold">
+                {additionalPage} / {totalAdditionalPages}
               </span>
-            ))}
-          </div>
-
-          <div className="text-center text-xs text-gray-500">
-            by <span className="font-semibold">guest</span> 🕒 {currentAdditionalEntry.date}
-          </div>
-        </div>
+              <button
+                onClick={() => setAdditionalPage((prev) => Math.min(prev + 1, totalAdditionalPages))}
+                disabled={additionalPage === totalAdditionalPages}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+              >
+                다음 ▶
+              </button>
+            </div>
+          )}
+        </>
       )}
-
-      {infoGenerated && totalAdditionalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-4">
-          <button
-            onClick={() => setAdditionalPage((prev) => Math.max(prev - 1, 1))}
-            disabled={additionalPage === 1}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
-          >
-            ◀ 이전
-          </button>
-
-          <span className="text-gray-700 font-semibold">
-            {additionalPage} / {totalAdditionalPages}
-          </span>
-
-          <button
-            onClick={() => setAdditionalPage((prev) => Math.min(prev + 1, totalAdditionalPages))}
-            disabled={additionalPage === totalAdditionalPages}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
-          >
-            다음 ▶
-          </button>
-        </div>
-      )}
-
+      
       <Button 
         onClick={handleButtonClick} 
         disabled={buttonDisabled} 
