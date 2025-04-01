@@ -617,6 +617,8 @@ const LottoGenerator = () => {
     setGenerationId(newId);
     setGenerationTime(now);   
 
+    setAdditionalPage(1);
+
     await fetchLottoHistory();
   
     const fullHistory = { ...newHistory, id: newId };
@@ -832,7 +834,7 @@ const LottoGenerator = () => {
             🎉 추가 생성 완료!{" "}
             {currentAdditionalEntry?.id && (
                 <span className="text-blue-600 font-bold">
-                  {currentAdditionalEntry.id}
+                {`No-${String(currentAdditionalEntry.id).padStart(9, "0")}`}
               </span>
             )}
           </div>
