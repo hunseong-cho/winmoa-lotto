@@ -509,15 +509,10 @@ const LottoGenerator = () => {
   };   
 
   useEffect(() => {
-    if (infoGenerated) {
+    if (infoGenerated && additionalHistory.length > 0) {
       setAdditionalPage(1);
     }
-  }, [generatedHistory]);
-
-  // ✅ 기존: currentRound 계산용 useEffect
-  useEffect(() => {
-    setCurrentRound(calculateLottoRound());
-  }, []);
+  }, [additionalHistory.length]);
 
   useEffect(() => {
     if (!latestWinningNumbers?.round || !Object.keys(winningMap).length || !generatedHistory?.length) return;
