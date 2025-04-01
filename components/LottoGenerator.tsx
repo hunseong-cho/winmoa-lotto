@@ -492,9 +492,9 @@ const LottoGenerator = () => {
       setGenerationTime(now);
       setGenerationId(newId);
 
-      await fetchLottoHistory();
-
       setAdditionalPage(1);
+
+      await fetchLottoHistory();      
   
       // ✅ 서버 백업 저장
       fetch("/api/lottoHistory", {
@@ -507,12 +507,6 @@ const LottoGenerator = () => {
     }, 5000);
     setAnimateAddition(true);
   };   
-
-  useEffect(() => {
-    if (infoGenerated && additionalHistory.length > 0) {
-      setAdditionalPage(1);
-    }
-  }, [additionalHistory.length]);
 
   useEffect(() => {
     if (!latestWinningNumbers?.round || !Object.keys(winningMap).length || !generatedHistory?.length) return;
