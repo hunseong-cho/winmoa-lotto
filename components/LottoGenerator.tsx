@@ -169,7 +169,7 @@ const LottoGenerator = () => {
         mobileSrc: "/banner-ad-mobile-2.jpg",
         link: "https://www.mobing.co.kr/",
       },
-      // 추가 배너들...
+      // 추가 배너들... 
     ];
   const bannerDelay = 3000; // 슬라이드 전환 시간(ms)
 
