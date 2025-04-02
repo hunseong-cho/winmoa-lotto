@@ -189,9 +189,17 @@ const LottoGenerator = () => {
   const maxAdditions = 5;
 
   const additionalHistory = useMemo(() => {
+    const getTime = (val: any): number => {
+      if (!val) return 0;
+      if (typeof val === "object" && "seconds" in val) {
+        return new Date(val.seconds * 1000).getTime();
+      }
+      return new Date(val).getTime();
+    };
+  
     return [...generatedHistory]
       .filter((entry) => entry.userKey === userKey && entry.type === "추가")
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => getTime(b.createdAt || b.date) - getTime(a.createdAt || a.date))
       .slice(0, maxAdditions);
   }, [generatedHistory, userKey]);
 
