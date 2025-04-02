@@ -59,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* ✅ Naver 소유권 인증 메타 태그 (예시) */}
         <meta
           name="naver-site-verification"
-          content="6ac60d8ad956e501d5bca8383f7d83c8404663f6"
+          content="66eec4859c8e90b9957df442274af1403c512649"
         />
         {/* ✅ 기타 SEO 기본 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
