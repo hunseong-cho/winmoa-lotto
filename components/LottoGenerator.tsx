@@ -257,7 +257,7 @@ const LottoGenerator = () => {
   }, [birthYear, birthMonth, birthDay]);  
 
   useEffect(() => {
-    setCurrentRound(calculateLottoRound()); // ✅ 현재 회차 계산 
+    setCurrentRound(calculateLottoRound()); // ✅ 현재 회차 계산
   }, []);
 
   useEffect(() => {  
