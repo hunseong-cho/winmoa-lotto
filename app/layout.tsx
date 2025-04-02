@@ -13,33 +13,45 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "행운 로또번호 생성기 - 오늘의 추천 로또 번호",
-  description: "AI 운세 기반으로 추천된 행운의 로또 번호를 생성해보세요! 매주 당첨 번호 분석과 통계 포함!",
-  keywords: ["로또번호", "로또 생성기", "운세 기반 로또", "행운 번호", "로또 분석", "AI 로또 추천"],
-  authors: [{ name: "Lotto Wizard" }],
+  title: "AI 로또번호 추천기 - 오늘의 당첨 예상 번호 무료 생성",
+  description: "로또6/45 공식 통계 기반, AI 운세 알고리즘으로 오늘의 당첨 예측 번호를 무료로 받아보세요. 회차별 당첨 결과와 당첨자 수, 번호 빈도까지 완벽 분석!",
+  keywords: [
+    "로또번호 생성기",
+    "AI 로또 예측",
+    "로또 추천 번호",
+    "로또 통계 분석",
+    "로또6/45",
+    "오늘의 로또 번호",
+    "행운 번호 추천",
+    "당첨 번호 예측",
+    "로또 당첨 통계",
+    "로또 당첨자 수"
+  ],
+  authors: [{ name: "LuckyLotto AI" }],
   generator: "Next.js",
-  applicationName: "행운 로또 생성기",
+  applicationName: "AI 로또 추천기",
   openGraph: {
-    title: "행운 로또번호 생성기 - 오늘의 추천 로또 번호",
-    description: "AI 운세 기반으로 추천된 행운의 로또 번호를 생성해보세요! 통계와 분석 포함!",
-    url: "https://lotto.winmoa.net",
+    title: "오늘의 AI 로또번호 추천기 - 무료 당첨 예측!",
+    description: "매주 바뀌는 당첨 번호, AI 알고리즘으로 예측! 로또 통계와 번호 빈도 분석까지 무료 제공!",
+    url: "https://dhlottery.winmoa.net/",
     siteName: "LuckyLotto",
     type: "website",
     locale: "ko_KR",
   },
   twitter: {
     card: "summary_large_image",
-    title: "행운 로또번호 생성기",
-    description: "AI 기반 로또 추천번호! 오늘의 행운은 당신의 것!",
-    creator: "@your_twitter",
+    title: "오늘의 로또 예측번호 - AI 기반 추천",
+    description: "당첨 번호는 과학이다! 로또 번호 AI 예측 무료 체험",
+    creator: "@luckylotto_ai",
   },
 };
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
       <head>
-        {/* ✅ Google 소유권 인증 메타 태그 */}
+        {/* ✅ Google Search Console 메타태그 */}
         <meta
           name="google-site-verification"
           content="JC6KrKMi8q8b_GYOZJZJslR312WKJPKqumhfnS3saw8"
@@ -47,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* ✅ Naver 소유권 인증 메타 태그 (예시) */}
         <meta
           name="naver-site-verification"
-          content="0df24a29ea5ef80459c6fdbf3c77722c7788e4a0"
+          content="6ac60d8ad956e501d5bca8383f7d83c8404663f6"
         />
         {/* ✅ 기타 SEO 기본 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
