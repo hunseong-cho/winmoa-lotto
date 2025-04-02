@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: 'https://lotto.winmoa.net',
+  siteUrl: 'https://dhlottery.winmoa.net/',
   generateRobotsTxt: true,
   sitemapSize: 5000,
   outDir: "public",
@@ -13,7 +13,7 @@ module.exports = {
       }
     ],
     additionalSitemaps: [
-      "https://lotto.winmoa.net/sitemap.xml"
+      "https://dhlottery.winmoa.net/sitemap.xml"
     ]
   }
 };
