@@ -792,7 +792,7 @@ const LottoGenerator = () => {
               </select>
             </div>
                   {/* ✅ 안내 문구 추가 */}
-              <div className="text-center text-xs text-gray-500 mt-2">
+              <div className="text-center text-xs text-gray-500 mt-2 font-semibold">
                 ※ 입력하신 개인정보는 저장되지 않으며, 번호 생성에만 일시적으로 사용됩니다.
               </div>
           </div>
